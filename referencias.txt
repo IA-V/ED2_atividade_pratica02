@@ -1,2 +1,5 @@
 http://docente.ifrn.edu.br/robinsonalves/disciplinas/estruturas-de-dados/09Dicionarios.pdf
 https://pt.wikipedia.org/wiki/%C3%81rvore_2-3-4
+https://www.sanfoundry.com/java-program-implement-avl-tree/
+https://gist.github.com/rodrigovilar/5754425
+https://acervolima.com/implementando-nossa-propria-tabela-de-hash-com-encadeamento-separado-em-java/

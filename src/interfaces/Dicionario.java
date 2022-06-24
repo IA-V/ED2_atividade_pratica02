@@ -1,9 +1,9 @@
 package interfaces;
 
-import indice.IndiceInvertido;
+import indice.ItemIndiceInvertido;
 
 public interface Dicionario {
-	public void inserir(IndiceInvertido item);	
-	public IndiceInvertido remover(IndiceInvertido item);	
-	public IndiceInvertido buscar(IndiceInvertido item);
+	public void inserir(ItemIndiceInvertido item);	
+	public ItemIndiceInvertido remover(ItemIndiceInvertido item);	
+	public ItemIndiceInvertido buscar(ItemIndiceInvertido item);
 }
