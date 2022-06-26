@@ -114,6 +114,18 @@ public class HashEncadeado /*implements Dicionario*/ {
 	public ItemIndiceInvertido buscar(String chave) {
 		int indiceNoBuscado = this.calcularHash(chave);
 		
-		return this.listaNos.get(indiceNoBuscado).getItem();
+		NoHash noAtual = this.listaNos.get(indiceNoBuscado);
+		
+		while(noAtual.getProximoItem() != null && noAtual.getChave().compareTo(chave) != 0) {
+			noAtual = noAtual.getProximoItem();
+		}
+		
+		if(noAtual.getChave().compareTo(chave) == 0) {
+			return noAtual.getItem();
+		} else if(noAtual.getProximoItem() == null) {
+			return null;
+		}
+		
+		return null;
 	}
 }

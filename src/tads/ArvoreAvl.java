@@ -151,9 +151,8 @@ public class ArvoreAvl {
 	
 	private ItemIndiceInvertido buscar(ItemIndiceInvertido item, NoArvoreAvl raiz) {
         ItemIndiceInvertido resultado = null;
-		boolean found = false;
 
-        while (raiz != null) {
+        if(raiz != null) {
             ItemIndiceInvertido valorRaiz = raiz.getElemento();
 
             if (item.getPalavra().compareTo(valorRaiz.getPalavra()) < 0) {
@@ -162,7 +161,6 @@ public class ArvoreAvl {
                 raiz = raiz.getDireita();
             } else {
                 resultado = raiz.getElemento();
-                break;
             }
             resultado = this.buscar(item, raiz);
 
