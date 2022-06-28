@@ -6,7 +6,7 @@ public class ParQtdId {
 	
 	public ParQtdId(int idProduto) {
 		this.idProduto = idProduto;
-		this.qtd = 0;
+		this.qtd = 1;
 	}
 
 	public int getQtd() {
@@ -23,5 +23,9 @@ public class ParQtdId {
 
 	public void setIdProduto(int idProduto) {
 		this.idProduto = idProduto;
+	}
+	
+	public void incrementarQtd(int qtd) {
+		this.qtd += qtd;
 	}
 }

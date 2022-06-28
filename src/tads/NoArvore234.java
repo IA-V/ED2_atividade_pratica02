@@ -3,7 +3,7 @@ package tads;
 import indice.ItemIndiceInvertido;
 import interfaces.Dicionario;
 
-public class NoArvore234 /*implements Dicionario*/ { // t = 2
+public class NoArvore234 { // t = 2
 	private int numMaxChaves;
 	private boolean folha;
 	private ItemIndiceInvertido[] chaves;
@@ -15,16 +15,36 @@ public class NoArvore234 /*implements Dicionario*/ { // t = 2
 		this.folha = true;
 		this.numMaxChaves = 3;
 	}
-	
-	public void inserir(ItemIndiceInvertido item) {
-		
+
+	public int getNumMaxChaves() {
+		return numMaxChaves;
 	}
-	
-	/*public IndiceInvertido remover(IndiceInvertido item) {
-		
+
+	public void setNumMaxChaves(int numMaxChaves) {
+		this.numMaxChaves = numMaxChaves;
 	}
-	
-	public IndiceInvertido buscar(IndiceInvertido item) {
-		
-	}*/
+
+	public boolean isFolha() {
+		return folha;
+	}
+
+	public void setFolha(boolean folha) {
+		this.folha = folha;
+	}
+
+	public ItemIndiceInvertido[] getChaves() {
+		return chaves;
+	}
+
+	public void setChaves(ItemIndiceInvertido[] chaves) {
+		this.chaves = chaves;
+	}
+
+	public NoArvore234[] getFilhos() {
+		return filhos;
+	}
+
+	public void setFilhos(NoArvore234[] filhos) {
+		this.filhos = filhos;
+	}
 }

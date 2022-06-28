@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import indice.ItemIndiceInvertido;
 import interfaces.Dicionario;
 
-public class HashEncadeado /*implements Dicionario*/ {
+public class HashEncadeado implements Dicionario {
 	private ArrayList<NoHash> listaNos;
 	private int tamanhoMax;
 	private int tamanhoAtual;
@@ -14,9 +14,16 @@ public class HashEncadeado /*implements Dicionario*/ {
 		this.listaNos = new ArrayList<>();
 		this.tamanhoMax = tamanhoMax;
 		this.tamanhoAtual = 0;
+		this.inicializarArrayList();
 	}
 	
-	private int calcularHash(String chave) {
+	private void inicializarArrayList() {
+		for(int i = 0; i < this.tamanhoMax; i++) {
+			this.listaNos.add(null);
+		}
+	}
+	
+	public int calcularHash(String chave) {
 		byte[] arrayBytes = chave.getBytes();
 		
 		int contador = 0;
@@ -28,12 +35,13 @@ public class HashEncadeado /*implements Dicionario*/ {
 		
 		int soma = 0;
 		for(int i = 0; i < contador; i++) {
-			System.out.println(arrayBytes[i]);
 			soma += arrayBytes[i];
 		}
 		
 		int hash = (int)Math.floor(this.tamanhoMax*((soma*0.6180339887)%1));
 		
+		System.out.println(chave);
+		System.out.println(hash+"\n");
 		return hash;
 	}
 	
@@ -41,15 +49,16 @@ public class HashEncadeado /*implements Dicionario*/ {
 		return this.listaNos.size()== 0;
 	}
 	
-	public void inserir(NoHash novoNo) {		
+	public void inserir(ItemIndiceInvertido novoItem) {		
 		// encontra o indice do novo no da lista hash
+		NoHash novoNo = new NoHash(novoItem);
         int indiceNovoNo = this.calcularHash(novoNo.getChave());
         
         novoNo.setIndice(indiceNovoNo);
         NoHash noAtual = null;
         
         if(this.isEmpty()) {
-        	this.listaNos.add(indiceNovoNo, novoNo);
+        	this.listaNos.set(indiceNovoNo, novoNo);
         } else {
         	if(this.listaNos.get(indiceNovoNo) != null) {
         		noAtual = this.listaNos.get(indiceNovoNo);
@@ -59,7 +68,7 @@ public class HashEncadeado /*implements Dicionario*/ {
         		
         		noAtual.setProximoItem(novoNo);
         	} else {
-        		this.listaNos.add(indiceNovoNo, novoNo);
+        		this.listaNos.set(indiceNovoNo, novoNo);
         	}
         }
         
@@ -71,12 +80,11 @@ public class HashEncadeado /*implements Dicionario*/ {
         	 this.listaNos = new ArrayList<>();
              
              
-             for (int i = 0; i < this.tamanhoMax; i++)
-                 this.listaNos.add(null);
+             this.inicializarArrayList();
   
              for (NoHash no : temp) {
                  while(no != null) {
-                     this.inserir(no);
+                     this.inserir(no.getItem());
                  }
              }
         }
@@ -112,18 +120,24 @@ public class HashEncadeado /*implements Dicionario*/ {
 	}
 	
 	public ItemIndiceInvertido buscar(String chave) {
+		if(this.isEmpty()) {
+			return null;
+		}
+		
 		int indiceNoBuscado = this.calcularHash(chave);
 		
 		NoHash noAtual = this.listaNos.get(indiceNoBuscado);
 		
-		while(noAtual.getProximoItem() != null && noAtual.getChave().compareTo(chave) != 0) {
-			noAtual = noAtual.getProximoItem();
-		}
-		
-		if(noAtual.getChave().compareTo(chave) == 0) {
-			return noAtual.getItem();
-		} else if(noAtual.getProximoItem() == null) {
-			return null;
+		if(noAtual != null) {
+			while(noAtual.getProximoItem() != null && noAtual.getChave().compareTo(chave) != 0) {
+				noAtual = noAtual.getProximoItem();
+			}
+			
+			if(noAtual.getChave().compareTo(chave) == 0) {
+				return noAtual.getItem();
+			} else if(noAtual.getProximoItem() == null) {
+				return null;
+			}
 		}
 		
 		return null;

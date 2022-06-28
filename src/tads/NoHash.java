@@ -1,6 +1,5 @@
 package tads;
 import indice.*;
-import interfaces.*;
 
 public class NoHash {
 	private ItemIndiceInvertido item;

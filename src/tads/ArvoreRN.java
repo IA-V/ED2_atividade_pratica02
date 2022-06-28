@@ -1,8 +1,9 @@
 package tads;
 
 import indice.ItemIndiceInvertido;
+import interfaces.Dicionario;
 
-public class ArvoreRN {
+public class ArvoreRN implements Dicionario {
 	private NoArvoreRN raiz;
 	
 	public ArvoreRN() {
@@ -13,12 +14,13 @@ public class ArvoreRN {
         return this.raiz == null;
     }
     
-    public NoArvoreRN buscar(ItemIndiceInvertido item) {
+    public ItemIndiceInvertido buscar(String chave) {
+    	ItemIndiceInvertido item = this.buscar(chave);
 		return this.buscar(item, this.raiz);
 	}
     
-    private NoArvoreRN buscar(ItemIndiceInvertido item, NoArvoreRN raiz) {
-        NoArvoreRN resultado = null;
+    private ItemIndiceInvertido buscar(ItemIndiceInvertido item, NoArvoreRN raiz) {
+    	ItemIndiceInvertido resultado = null;
 
         if(raiz != null) {
             ItemIndiceInvertido valorRaiz = raiz.getElemento();
@@ -28,7 +30,7 @@ public class ArvoreRN {
             } else if (item.getPalavra().compareTo(valorRaiz.getPalavra()) > 0) {
                 raiz = raiz.getDireita();
             } else {
-                resultado = raiz;
+                resultado = raiz.getElemento();
             }
             resultado = this.buscar(item, raiz);
 
@@ -37,7 +39,9 @@ public class ArvoreRN {
         return resultado;
 	}
     
-    public void inserir(NoArvoreRN novoNo) {
+    public void inserir(ItemIndiceInvertido item) {
+    	NoArvoreRN novoNo = new NoArvoreRN(item);
+    	
     	NoArvoreRN noAux = null;
     	NoArvoreRN raizAux = this.raiz;
     	
@@ -106,40 +110,51 @@ public class ArvoreRN {
     	this.raiz.setCor(false);
     }
     
-    public NoArvoreRN remover(NoArvoreRN noRemovido) {
+    public ItemIndiceInvertido remover(String chave) {
+    	return this.remover(chave, this.raiz);
+    }
+    
+    private ItemIndiceInvertido remover(String chave, NoArvoreRN raiz) {
     	NoArvoreRN noAux1 = null;
     	NoArvoreRN noAux2 = null;
-    	if(noRemovido.getEsquerda() == null || noRemovido.getDireita() == null) {
-    		noAux1 = noRemovido;
-    	} else {
-    		noAux1 = this.sucessorEsquerda(noRemovido, noRemovido.getPai());
-    	}
     	
-    	if(noAux1.getEsquerda() != null) {
-    		noAux2 = noAux1.getEsquerda();
-    	} else {
-    		noAux2 = noAux1.getDireita();
-    	}
-    	
-    	noAux2.setPai(noAux1.getPai());
-    	
-    	if(noAux1.getPai() == null) {
-    		this.raiz = noAux2;
-    	} else if(noAux1 == noAux1.getPai().getEsquerda()) {
-    		noAux1.getPai().setEsquerda(noAux2);
-    	} else {
-    		noAux1.getPai().setDireita(noAux2);
-    	}
-    	
-    	if(noAux1 != noRemovido) {
-    		noRemovido.setElemento(noAux1.getElemento());
-    	}
-    	
-    	if(!noAux1.getCor()) {
-    		this.deleteFixup(noAux2);
-    	}
-    	
-    	return noAux1;
+    	if(chave.compareTo(raiz.getChave()) > 0) {
+			this.remover(chave, raiz.getEsquerda());
+		} else if (chave.compareTo(raiz.getChave()) < 0) {
+			this.remover(chave, raiz.getDireita());
+		} else if (chave.compareTo(raiz.getChave()) == 0) {
+		
+			if(raiz.getEsquerda() == null || raiz.getDireita() == null) {
+	    		noAux1 = raiz;
+	    	} else {
+	    		noAux1 = this.sucessorEsquerda(raiz, raiz.getPai());
+	    	}
+	    	
+	    	if(noAux1.getEsquerda() != null) {
+	    		noAux2 = noAux1.getEsquerda();
+	    	} else {
+	    		noAux2 = noAux1.getDireita();
+	    	}
+	    	
+	    	noAux2.setPai(noAux1.getPai());
+	    	
+	    	if(noAux1.getPai() == null) {
+	    		this.raiz = noAux2;
+	    	} else if(noAux1 == noAux1.getPai().getEsquerda()) {
+	    		noAux1.getPai().setEsquerda(noAux2);
+	    	} else {
+	    		noAux1.getPai().setDireita(noAux2);
+	    	}
+	    	
+	    	if(noAux1 != raiz) {
+	    		raiz.setElemento(noAux1.getElemento());
+	    	}
+	    	
+	    	if(!noAux1.getCor()) {
+	    		this.deleteFixup(noAux2);
+	    	}
+		}
+    	return noAux1.getElemento();
     }
     
     private void deleteFixup(NoArvoreRN no) {

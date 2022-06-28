@@ -1,7 +1,6 @@
 package tads;
 
 import indice.ItemIndiceInvertido;
-import interfaces.Dicionario;
 
 public class NoArvoreRN {
 	private ItemIndiceInvertido elemento; // a palavra do elemento sera a chave

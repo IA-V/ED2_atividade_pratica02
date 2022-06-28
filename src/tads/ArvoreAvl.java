@@ -3,7 +3,7 @@ package tads;
 import indice.ItemIndiceInvertido;
 import interfaces.Dicionario;
 
-public class ArvoreAvl {
+public class ArvoreAvl implements Dicionario {
     private NoArvoreAvl raiz;
     
     public ArvoreAvl() {
@@ -62,14 +62,15 @@ public class ArvoreAvl {
         return raiz;
 	}
 	
-    public NoArvoreAvl remover(ItemIndiceInvertido item) {
+    public ItemIndiceInvertido remover(String palavra) {
+    	ItemIndiceInvertido item = this.buscar(palavra);
     	return this.remover(item, this.raiz, null);
     }
     
-	private NoArvoreAvl remover(ItemIndiceInvertido item, NoArvoreAvl raiz, NoArvoreAvl noPai) {
+	private ItemIndiceInvertido remover(ItemIndiceInvertido item, NoArvoreAvl raiz, NoArvoreAvl noPai) {
 		if(raiz != null) {
 			ItemIndiceInvertido elementoAtual = raiz.getElemento();
-			if (elementoAtual.getPalavra().compareTo(item.getPalavra()) > 0) {
+			if(elementoAtual.getPalavra().compareTo(item.getPalavra()) > 0) {
 				this.remover(item, raiz.getEsquerda(), raiz);
 			} else if (elementoAtual.getPalavra().compareTo(item.getPalavra()) < 0) {
 				this.remover(item, raiz.getDireita(), raiz);
@@ -78,21 +79,21 @@ public class ArvoreAvl {
 				if(raiz.getEsquerda() == null && raiz.getDireita() == null) {
 	                NoArvoreAvl noRemovido = raiz;
 	                raiz = null;
-	                return noRemovido;
+	                return noRemovido.getElemento();
 	            } else if(raiz.getEsquerda() == null) {
 	            	noPai.setDireita(raiz);
 	                NoArvoreAvl noRemovido = raiz;
 	                raiz = null;
-	                return noRemovido;
+	                return noRemovido.getElemento();
 	            } else if(raiz.getDireita() == null) {
 	            	noPai.setEsquerda(raiz);
 	            	NoArvoreAvl noRemovido = raiz;
 	                raiz = null;
-	                return noRemovido;
+	                return noRemovido.getElemento();
 	            } else {
 	                NoArvoreAvl noRemovido = raiz;
 	                raiz.setEsquerda(this.sucessorEsquerda(raiz.getEsquerda(), raiz));
-	                return noRemovido;
+	                return noRemovido.getElemento();
 	            }
 				
 			}
@@ -100,7 +101,7 @@ public class ArvoreAvl {
 		return null;	
 	}
 	
-	public NoArvoreAvl sucessorEsquerda(NoArvoreAvl no, NoArvoreAvl noPai) {
+	private NoArvoreAvl sucessorEsquerda(NoArvoreAvl no, NoArvoreAvl noPai) {
 		if(no != null) {
 	        if(no.getDireita() != null) {
 	            sucessorEsquerda(no.getEsquerda(), no);
@@ -125,44 +126,24 @@ public class ArvoreAvl {
 	    }
 	}
 	
-	public NoArvoreAvl sucessorDireita(NoArvoreAvl q) {
-		NoArvoreAvl r = null;
-		
-		if (q.getDireita() != null) {
-			r = q.getDireita();
-			while (r.getEsquerda() != null) {
-				r = r.getEsquerda();
-			}
-		} /*else {
-			NoArvoreAvl p = q.getPai();
-			while (p != null && q == p.getDireita()) {
-				q = p;
-				p = q.getPai();
-			}
-			return p;
-		}*/
-		
-		return r;
+	public ItemIndiceInvertido buscar(String palavra) {
+		return this.buscar(palavra, this.raiz);
 	}
 	
-	public ItemIndiceInvertido buscar(ItemIndiceInvertido item) {
-		return this.buscar(item, this.raiz);
-	}
-	
-	private ItemIndiceInvertido buscar(ItemIndiceInvertido item, NoArvoreAvl raiz) {
+	private ItemIndiceInvertido buscar(String palavra, NoArvoreAvl raiz) {
         ItemIndiceInvertido resultado = null;
 
         if(raiz != null) {
             ItemIndiceInvertido valorRaiz = raiz.getElemento();
 
-            if (item.getPalavra().compareTo(valorRaiz.getPalavra()) < 0) {
+            if (palavra.compareTo(valorRaiz.getPalavra()) < 0) {
                 raiz = raiz.getEsquerda();
-            } else if (item.getPalavra().compareTo(valorRaiz.getPalavra()) > 0) {
+            } else if (palavra.compareTo(valorRaiz.getPalavra()) > 0) {
                 raiz = raiz.getDireita();
             } else {
                 resultado = raiz.getElemento();
             }
-            resultado = this.buscar(item, raiz);
+            resultado = this.buscar(palavra, raiz);
 
         }
 
