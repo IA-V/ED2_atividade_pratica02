@@ -3,13 +3,14 @@ import indice.*;
 
 public class NoArvoreAvl  {
 	private ItemIndiceInvertido elemento; // a palavra do elemento sera a chave
-	private NoArvoreAvl esquerda, direita;
+	private NoArvoreAvl esquerda, direita, pai;
 	private int altura;
 	
 	public NoArvoreAvl (ItemIndiceInvertido elemento, NoArvoreAvl esq, NoArvoreAvl dir) {
 		this.elemento = elemento;
 		this.esquerda = esq;
 		this.direita = dir;
+		this.pai = null;
 		this.altura = 0;
 	}
 	
@@ -47,5 +48,21 @@ public class NoArvoreAvl  {
 
 	public void setAltura(int altura) {
 		this.altura = altura;
+	}
+	
+	public String getChave() {
+		return this.elemento.getPalavra();
+	}
+
+	public NoArvoreAvl getPai() {
+		return this.pai;
+	}
+
+	public void setPai(NoArvoreAvl pai) {
+		this.pai = pai;
+	}
+
+	public void setChave(String chave) {
+		this.elemento.setPalavra(chave);
 	}
 }

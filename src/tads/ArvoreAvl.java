@@ -14,116 +14,194 @@ public class ArvoreAvl implements Dicionario {
         return this.raiz == null;
     }
     
+    public void listar() {
+    	this.listar(this.raiz);
+    }
+    
+    private void listar(NoArvoreAvl raiz) {
+    	if(raiz != null) {
+    		this.listar(raiz.getEsquerda());
+    		
+    		System.out.println("Pai da Raiz = "+raiz.getPai());
+        	System.out.println("Raiz = "+raiz.getChave());
+        	//System.out.println("FB = " + (raiz.getDireita().getAltura()-raiz.getEsquerda().getAltura()));
+        	System.out.println("filho esq da raiz = "+raiz.getEsquerda());
+        	System.out.println("filho dir da raiz = "+raiz.getDireita());
+        	System.out.println();
+        	
+        	this.listar(raiz.getDireita());
+    	}
+    	
+    	
+    }
+    
     public void inserir(ItemIndiceInvertido item) {
-    	this.raiz = this.inserir(item, this.raiz);
-    }
-    
-    private NoArvoreAvl inserir(ItemIndiceInvertido item, NoArvoreAvl raiz) {
-    	NoArvoreAvl raizEsq;
-        NoArvoreAvl raizDir;
-        int fatorBalanceamento;
-    	
-    	if(raiz == null) {
-    		raiz = new NoArvoreAvl(item);
-    	} else if (item.getPalavra().compareTo(raiz.getElemento().getPalavra()) < 0) {
-            raiz.setEsquerda(this.inserir(item, raiz.getEsquerda()));
-            
-            raizEsq = raiz.getEsquerda();
-            raizDir = raiz.getDireita();
-            fatorBalanceamento = raizEsq.getAltura() - raizDir.getAltura(); 
-            
-            if(fatorBalanceamento  == 2) {
-                if(item.getPalavra().compareTo(raizEsq.getElemento().getPalavra()) < 0) {
-                    raiz = this.rotacaoEsquerda(raiz);
-                } else {
-                    raiz = this.rotacaoDuplaEsquerda(raiz);
-                }
-            }
-        } else if(item.getPalavra().compareTo(raiz.getElemento().getPalavra()) > 0) {
-        	raiz.setDireita(this.inserir(item, raiz.getDireita()));
-
-        	raizEsq = raiz.getEsquerda();
-            raizDir = raiz.getDireita();
-            fatorBalanceamento = raizDir.getAltura() - raizEsq.getAltura();
-            
-            if(fatorBalanceamento == 2)
-                if(item.getPalavra().compareTo(raizDir.getElemento().getPalavra()) < 0) {
-                    raiz = this.rotacaoDireita(raiz);
-                } else {
-                    raiz = this.rotacaoDuplaDireita(raiz);
-                }
-        } else {
-
-          ;  // Duplicate; do nothing
-        }
-    	
-        raiz.setAltura(Math.max(raiz.getEsquerda().getAltura(), raiz.getDireita().getAltura()) + 1);
-
-        return raiz;
+		NoArvoreAvl novoNo = new NoArvoreAvl(item);
+		this.inserir(this.raiz, novoNo);
 	}
-	
-    public ItemIndiceInvertido remover(String palavra) {
-    	ItemIndiceInvertido item = this.buscar(palavra);
-    	return this.remover(item, this.raiz, null);
-    }
-    
-	private ItemIndiceInvertido remover(ItemIndiceInvertido item, NoArvoreAvl raiz, NoArvoreAvl noPai) {
-		if(raiz != null) {
-			ItemIndiceInvertido elementoAtual = raiz.getElemento();
-			if(elementoAtual.getPalavra().compareTo(item.getPalavra()) > 0) {
-				this.remover(item, raiz.getEsquerda(), raiz);
-			} else if (elementoAtual.getPalavra().compareTo(item.getPalavra()) < 0) {
-				this.remover(item, raiz.getDireita(), raiz);
-			} else if (elementoAtual.getPalavra().compareTo(item.getPalavra()) == 0) {
-				
-				if(raiz.getEsquerda() == null && raiz.getDireita() == null) {
-	                NoArvoreAvl noRemovido = raiz;
-	                raiz = null;
-	                return noRemovido.getElemento();
-	            } else if(raiz.getEsquerda() == null) {
-	            	noPai.setDireita(raiz);
-	                NoArvoreAvl noRemovido = raiz;
-	                raiz = null;
-	                return noRemovido.getElemento();
-	            } else if(raiz.getDireita() == null) {
-	            	noPai.setEsquerda(raiz);
-	            	NoArvoreAvl noRemovido = raiz;
-	                raiz = null;
-	                return noRemovido.getElemento();
-	            } else {
-	                NoArvoreAvl noRemovido = raiz;
-	                raiz.setEsquerda(this.sucessorEsquerda(raiz.getEsquerda(), raiz));
-	                return noRemovido.getElemento();
-	            }
-				
+
+	public void inserir(NoArvoreAvl raiz, NoArvoreAvl novoNo) {
+
+		if (raiz == null) {
+			this.raiz = novoNo;
+
+		} else {
+
+			if (novoNo.getChave().compareTo(raiz.getChave()) < 0) {
+
+				if (raiz.getEsquerda() == null) {
+					raiz.setEsquerda(novoNo);
+					novoNo.setPai(raiz);
+					this.balancear(raiz);
+
+				} else {
+					this.inserir(raiz.getEsquerda(), novoNo);
+				}
+
+			} else if (novoNo.getChave().compareTo(raiz.getChave()) > 0) {
+
+				if (raiz.getDireita() == null) {
+					raiz.setDireita(novoNo);
+					novoNo.setPai(raiz);
+					this.balancear(raiz);
+
+				} else {
+					this.inserir(raiz.getDireita(), novoNo);
+				}
+
+			} else {
+				// O nó já existe na árvore
 			}
 		}
-		return null;	
+	}
+    
+    public ItemIndiceInvertido remover(String chave) {
+		return removerAVL(this.raiz, chave);
+	}
+
+	public ItemIndiceInvertido removerAVL(NoArvoreAvl raiz, String chave) {
+		if(raiz == null) {
+			return null;
+		} else {
+			if (raiz.getChave().compareTo(chave) > 0) {
+				return removerAVL(raiz.getEsquerda(), chave);
+
+			} else if (raiz.getChave().compareTo(chave) < 0) {
+				return removerAVL(raiz.getDireita(), chave);
+
+			} else /*if (raiz.getChave().compareTo(chave) == 0)*/ {
+				return removerNoEncontrado(raiz);
+			}
+		}
+	}
+
+	public ItemIndiceInvertido removerNoEncontrado(NoArvoreAvl noRemovido) {
+		ItemIndiceInvertido itemRemovido = noRemovido.getElemento();
+		NoArvoreAvl noAux1;
+
+		if(noRemovido.getEsquerda() == null || noRemovido.getDireita() == null) {
+
+			if(noRemovido.getPai() == null) {
+				this.raiz = null;
+				noRemovido = null;
+				return null;
+			}
+			noAux1 = noRemovido;
+
+		} else {
+			noAux1 = this.getSucessor(noRemovido);
+			noRemovido.setChave(noAux1.getChave());
+		}
+
+		NoArvoreAvl noAux2;
+		if(noAux1.getEsquerda() != null) {
+			noAux2 = noAux1.getEsquerda();
+		} else {
+			noAux2 = noAux1.getDireita();
+		}
+
+		if(noAux2 != null) {
+			noAux2.setPai(noAux1.getPai());
+		}
+
+		if(noAux1.getPai() == null) {
+			this.raiz = noAux2;
+		} else {
+			if(noAux1 == noAux1.getPai().getEsquerda()) {
+				noAux1.getPai().setEsquerda(noAux2);
+			} else {
+				noAux1.getPai().setDireita(noAux2);
+			}
+			balancear(noAux1.getPai());
+		}
+		noAux1 = null;
+		
+		return itemRemovido;
 	}
 	
-	private NoArvoreAvl sucessorEsquerda(NoArvoreAvl no, NoArvoreAvl noPai) {
-		if(no != null) {
-	        if(no.getDireita() != null) {
-	            sucessorEsquerda(no.getEsquerda(), no);
-	        } else {
-	            if(no.getEsquerda() != null) {
-	            	noPai.setDireita(no.getEsquerda());
-	            	NoArvoreAvl noRemovido = no;
-	                no = null;
-	                return noRemovido;
-	            } else {
-	            	noPai.setDireita(null);
-	            	NoArvoreAvl noRemovido = no;
-	                no = null;
-	                return noRemovido;
-	            }
-	        }
-	        //*data = NULL;
-	        NoArvoreAvl noRemovido = no;
-	        return noRemovido;
-	    } else {
-	    	return null;
-	    }
+	public void balancear(NoArvoreAvl raiz) {
+		int fb = this.calcularAltura(raiz.getDireita()) - this.calcularAltura(raiz.getEsquerda());
+
+		if(fb <= -2) {
+
+			if(this.calcularAltura(raiz.getEsquerda().getEsquerda()) >= this.calcularAltura(raiz.getEsquerda().getDireita())) {
+				raiz = rotacaoDireita(raiz);
+
+			} else {
+				raiz = rotacaoDuplaDireita(raiz);
+			}
+
+		} else if(fb >= 2) {
+
+			if (this.calcularAltura(raiz.getDireita().getDireita()) >= this.calcularAltura(raiz.getDireita().getEsquerda())) {
+				raiz = rotacaoEsquerda(raiz);
+
+			} else {
+				raiz = rotacaoDuplaEsquerda(raiz);
+			}
+		}
+
+		if(raiz.getPai() != null) {
+			balancear(raiz.getPai());
+		} else {
+			this.raiz = raiz;
+		}
+	}
+    
+    private int calcularAltura(NoArvoreAvl no) {
+    	if (no == null) {
+			return -1;
+		}
+
+		if (no.getEsquerda() == null && no.getDireita() == null) {
+			return 0;
+		
+		} else if (no.getEsquerda() == null) {
+			return 1 + this.calcularAltura(no.getDireita());
+		
+		} else if (no.getDireita() == null) {
+			return 1 + this.calcularAltura(no.getEsquerda());
+		
+		} else {
+			return 1 + Math.max(this.calcularAltura(no.getEsquerda()), this.calcularAltura(no.getDireita()));
+		}
+	}
+	
+	private NoArvoreAvl getSucessor(NoArvoreAvl no) {
+		if (no.getDireita() != null) {
+			NoArvoreAvl noAux1 = no.getDireita();
+			while (noAux1.getEsquerda() != null) {
+				noAux1 = noAux1.getEsquerda();
+			}
+			return noAux1;
+		} else {
+			NoArvoreAvl noAux2 = no.getPai();
+			while (noAux2 != null && no == noAux2.getDireita()) {
+				no = noAux2;
+				noAux2 = no.getPai();
+			}
+			return noAux2;
+		}
 	}
 	
 	public ItemIndiceInvertido buscar(String palavra) {
@@ -150,45 +228,97 @@ public class ArvoreAvl implements Dicionario {
         return resultado;
 	}
 	
-	private NoArvoreAvl rotacaoDireita(NoArvoreAvl k2) {
+	/*private NoArvoreAvl rotacaoDireita(NoArvoreAvl k2) {
 		NoArvoreAvl k1 = k2.getEsquerda();
 		k2.setEsquerda(k1.getDireita());
 		k1.setDireita(k2);
 		
 		NoArvoreAvl k2Esq = k2.getEsquerda();
 		NoArvoreAvl k2Dir = k2.getDireita();
-		k2.setAltura(Math.max(k2Esq.getAltura(), k2Dir.getAltura()) + 1);
+		k2.setAltura(Math.max(this.calcularAltura(k2Esq), this.calcularAltura(k2Dir)) + 1);
 		
 		NoArvoreAvl k1Esq = k1.getEsquerda();
-		k1.setAltura(Math.max(k1Esq.getAltura(), k2.getAltura()) + 1);
+		k1.setAltura(Math.max(this.calcularAltura(k1Esq), this.calcularAltura(k2)) + 1);
 		
 		return k1;
+	}*/
+	
+	public NoArvoreAvl rotacaoDireita(NoArvoreAvl no) {
+
+		NoArvoreAvl esq = no.getEsquerda();
+		esq.setPai(no.getPai());
+
+		no.setEsquerda(esq.getDireita());
+
+		if (no.getEsquerda() != null) {
+			no.getEsquerda().setPai(no);
+		}
+
+		esq.setDireita(no);
+		no.setPai(esq);
+
+		if (esq.getPai() != null) {
+
+			if (esq.getPai().getEsquerda() == no) {
+				esq.getPai().setDireita(esq);
+			
+			} else if (esq.getPai().getDireita() == no) {
+				esq.getPai().setEsquerda(esq);
+			}
+		}
+
+		return esq;
 	}
 	
-	private NoArvoreAvl rotacaoEsquerda(NoArvoreAvl k1) {
+	public NoArvoreAvl rotacaoEsquerda(NoArvoreAvl no) {
+
+		NoArvoreAvl dir = no.getDireita();
+		dir.setPai(no.getPai());
+
+		no.setDireita(dir.getEsquerda());
+
+		if (no.getDireita() != null) {
+			no.getDireita().setPai(no);
+		}
+
+		dir.setEsquerda(no);
+		no.setPai(dir);
+
+		if (dir.getPai() != null) {
+
+			if (dir.getPai().getDireita() == no) {
+				dir.getPai().setDireita(dir);
+			
+			} else if (dir.getPai().getEsquerda() == no) {
+				dir.getPai().setEsquerda(dir);
+			}
+		}
+
+		return dir;
+	}
+	
+	/*private NoArvoreAvl rotacaoEsquerda(NoArvoreAvl k1) {
 		NoArvoreAvl k2 = k1.getDireita();
 		k1.setDireita(k2.getEsquerda());
 		k2.setEsquerda(k1);
 		
 		NoArvoreAvl k1Esq = k1.getEsquerda();
 		NoArvoreAvl k1Dir = k1.getDireita();
-		k2.setAltura(Math.max(k1Esq.getAltura(), k1Dir.getAltura()) + 1);
+		k2.setAltura(Math.max(this.calcularAltura(k1Esq), this.calcularAltura(k1Dir)) + 1);
 		
 		NoArvoreAvl k2Dir = k2.getDireita();
-		k1.setAltura(Math.max(k2Dir.getAltura(), k1.getAltura()) + 1);
+		k1.setAltura(Math.max(this.calcularAltura(k2Dir), this.calcularAltura(k1)) + 1);
 		
 		return k2;
+	}*/
+	
+	private NoArvoreAvl rotacaoDuplaDireita(NoArvoreAvl no) {
+		no.setEsquerda(rotacaoEsquerda(no.getEsquerda()));
+		return this.rotacaoDireita(no);
 	}
 	
-	private NoArvoreAvl rotacaoDuplaDireita(NoArvoreAvl k2) {
-		k2.setEsquerda(this.rotacaoEsquerda(k2.getEsquerda()));
-		
-		return this.rotacaoDireita(k2);
-	}
-	
-	private NoArvoreAvl rotacaoDuplaEsquerda(NoArvoreAvl k1) {
-		k1.setDireita(this.rotacaoDireita(k1.getDireita()));
-		
-		return this.rotacaoEsquerda(k1);
+	private NoArvoreAvl rotacaoDuplaEsquerda(NoArvoreAvl no) {
+		no.setDireita(rotacaoDireita(no.getDireita()));
+		return rotacaoEsquerda(no);
 	}
 }

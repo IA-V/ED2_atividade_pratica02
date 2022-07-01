@@ -47,7 +47,7 @@ public abstract class LeitorCsv {
 	public static void inserirStopWords() {
 		String linha;
 		try {
-			BufferedReader leitor = new BufferedReader(new InputStreamReader(new FileInputStream("csv/stopwords.csv"), "UTF-8"));
+			BufferedReader leitor = new BufferedReader(new InputStreamReader(new FileInputStream("stopwords.csv"), "UTF-8"));
 			while((linha = leitor.readLine()) != null) {
 				stopwords.add(linha);
 			}
@@ -60,7 +60,7 @@ public abstract class LeitorCsv {
 	
 	private static boolean isStopWord(String palavra) {
 		for(String word: stopwords) {
-			if(word.compareTo(palavra) == 0 || palavra.compareTo("") == 0) {
+			if(word.compareTo(palavra) == 0 || palavra.compareTo("") == 0 || palavra.length() <= 1 || palavra.isBlank()) {
 				return true;
 			}
 		}
@@ -68,7 +68,7 @@ public abstract class LeitorCsv {
 		return false;
 	}
 	
-	public static void lerArquivos(Dicionario estrutura) throws IOException { // Recebe como argumento 
+	public static void criarIndiceInvertido(Dicionario estrutura) throws IOException { // Recebe como argumento 
 		inserirStopWords();
 		
 		final File folder = new File("csv/.");
@@ -83,7 +83,8 @@ public abstract class LeitorCsv {
 				String[] palavras = colunas[7].split(" ");
 				
 				for(String palavra: palavras) {
-					String palavraAux = palavra.replaceAll("[\\\"\\-\\+\\.\\^:,]","").toLowerCase();
+					System.out.println(palavra);
+					String palavraAux = palavra.replaceAll("[\\!\\/\\#\\½\\”\\’\\'\\“\\\"\\-\\+\\.\\^:,]","").toLowerCase();
 					if(!isStopWord(palavraAux)) {
 						
 						ItemIndiceInvertido item = estrutura.buscar(palavraAux);
