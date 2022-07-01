@@ -1,6 +1,9 @@
 package tads;
 
+import java.util.ArrayList;
+
 import indice.ItemIndiceInvertido;
+import indice.ParQtdId;
 import interfaces.Dicionario;
 
 public class ArvoreRN implements Dicionario {
@@ -22,11 +25,13 @@ public class ArvoreRN implements Dicionario {
     	if(raiz != null) {
     		this.listar(raiz.getEsquerda());
     		
-    		System.out.println("Pai da Raiz = "+raiz.getPai());
-        	System.out.println("Raiz = "+raiz.getChave());
-        	System.out.println("Cor da Raiz = "+raiz.getCor());
-        	System.out.println("filho esq da raiz = "+raiz.getEsquerda());
-        	System.out.println("filho dir da raiz = "+raiz.getDireita());
+    		ArrayList<ParQtdId> pares = raiz.getElemento().getParQtdId();
+			System.out.println("Palavra = "+raiz.getElemento().getPalavra());
+			System.out.print("Pares: ");
+			for(ParQtdId par: pares) {
+				System.out.print(par.getQtd()+" "+par.getIdProduto()+" | ");
+			}
+			System.out.println();
         	System.out.println();
         	
         	this.listar(raiz.getDireita());
@@ -89,7 +94,19 @@ public class ArvoreRN implements Dicionario {
     		} else if(novoNo.getChave().compareTo(raizAux.getChave()) > 0) {
     			raizAux = raizAux.getDireita();
     		} else {
-    			return;
+    			int idNovoItem = novoNo.getElemento().getParQtdId().get(0).getIdProduto();
+    			boolean encontrou = false;
+    			for(ParQtdId par: raizAux.getElemento().getParQtdId()) {
+    				if(par.getIdProduto() == idNovoItem) {
+            			raizAux.getElemento().incrementarQtd(1, idNovoItem);
+            			encontrou = true;
+            			break;
+            		}
+            	}
+    			
+    			if(!encontrou) {
+    				raizAux.getElemento().addParQtdId(new ParQtdId(idNovoItem));
+    			}
     		}
     	}
     	

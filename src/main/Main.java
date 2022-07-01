@@ -10,12 +10,13 @@ import leitor.LeitorCsv;
 
 public class Main {
 	public static void main(String[] args) {
-		HashEncadeado listaHash = new HashEncadeado(700000);
+		HashEncadeado listaHash = new HashEncadeado(700);
+		
 		
 		//listaHash.calcularHash("inch");
 		
-		/*ArvoreRN a1 = new ArvoreRN();
-		ArvoreRN a2 = a1;
+		//ArvoreRN a1 = new ArvoreRN();
+		/*ArvoreRN a2 = a1;
 		
 		//System.out.println(a2 == a1);
 		
@@ -36,9 +37,9 @@ public class Main {
 		
 		//System.out.println(a1.buscar("3").getPalavra());
 		
-		ArvoreAvl a3 = new ArvoreAvl();
+		//ArvoreAvl a3 = new ArvoreAvl();
 		
-		a3.inserir(new ItemIndiceInvertido("4"));
+		/*a3.inserir(new ItemIndiceInvertido("4"));
 		a3.inserir(new ItemIndiceInvertido("1"));
 		a3.inserir(new ItemIndiceInvertido("2"));
 		a3.inserir(new ItemIndiceInvertido("5"));
@@ -46,7 +47,7 @@ public class Main {
 		//a3.listar();
 		
 		a3.remover("4");
-		a3.listar();
+		a3.listar();*/
 		
 		/*final File folder = new File("csv/.");
 	    final List<File> fileList = Arrays.asList(folder.listFiles());*/
@@ -55,10 +56,11 @@ public class Main {
 	    	System.out.println(file.getName());
 	    }*/
 	    
-	    /*try {
+	    try {
 	    	LeitorCsv.criarIndiceInvertido(listaHash);
+	    	listaHash.listar();
 	    } catch (IOException e) {
 	    	System.out.println(e.getMessage());
-	    }*/
+	    }
 	}
 }

@@ -1,6 +1,9 @@
 package tads;
 
+import java.util.ArrayList;
+
 import indice.ItemIndiceInvertido;
+import indice.ParQtdId;
 import interfaces.Dicionario;
 
 public class ArvoreAvl implements Dicionario {
@@ -22,11 +25,13 @@ public class ArvoreAvl implements Dicionario {
     	if(raiz != null) {
     		this.listar(raiz.getEsquerda());
     		
-    		System.out.println("Pai da Raiz = "+raiz.getPai());
-        	System.out.println("Raiz = "+raiz.getChave());
-        	//System.out.println("FB = " + (raiz.getDireita().getAltura()-raiz.getEsquerda().getAltura()));
-        	System.out.println("filho esq da raiz = "+raiz.getEsquerda());
-        	System.out.println("filho dir da raiz = "+raiz.getDireita());
+    		ArrayList<ParQtdId> pares = raiz.getElemento().getParQtdId();
+			System.out.println("Palavra = "+raiz.getElemento().getPalavra());
+			System.out.print("Pares: ");
+			for(ParQtdId par: pares) {
+				System.out.print(par.getQtd()+" "+par.getIdProduto()+" | ");
+			}
+			System.out.println();
         	System.out.println();
         	
         	this.listar(raiz.getDireita());
@@ -70,7 +75,20 @@ public class ArvoreAvl implements Dicionario {
 				}
 
 			} else {
-				// O nó já existe na árvore
+				int idNovoItem = novoNo.getElemento().getParQtdId().get(0).getIdProduto();
+    			boolean encontrou = false;
+    			for(ParQtdId par: raiz.getElemento().getParQtdId()) {
+    				if(par.getIdProduto() == idNovoItem) {
+            			raiz.getElemento().incrementarQtd(1, idNovoItem);
+            			encontrou = true;
+            			break;
+            		}
+            	}
+    			
+    			if(!encontrou) {
+    				raiz.getElemento().addParQtdId(new ParQtdId(idNovoItem));
+    			}
+    			this.balancear(raiz);
 			}
 		}
 	}
@@ -169,7 +187,13 @@ public class ArvoreAvl implements Dicionario {
 	}
     
     private int calcularAltura(NoArvoreAvl no) {
-    	if (no == null) {
+    	if(no == null) {
+    		return 0;
+    	}
+    	
+    	return 1 + Math.max(this.calcularAltura(no.getEsquerda()), this.calcularAltura(no.getEsquerda()));
+    	
+    	/*if (no == null) {
 			return -1;
 		}
 
@@ -184,7 +208,7 @@ public class ArvoreAvl implements Dicionario {
 		
 		} else {
 			return 1 + Math.max(this.calcularAltura(no.getEsquerda()), this.calcularAltura(no.getDireita()));
-		}
+		}*/
 	}
 	
 	private NoArvoreAvl getSucessor(NoArvoreAvl no) {
@@ -205,18 +229,17 @@ public class ArvoreAvl implements Dicionario {
 	}
 	
 	public ItemIndiceInvertido buscar(String palavra) {
-		return this.buscar(palavra, this.raiz);
+		return null/*this.buscar(palavra, this.raiz)*/;
 	}
 	
-	private ItemIndiceInvertido buscar(String palavra, NoArvoreAvl raiz) {
+	/*private ItemIndiceInvertido buscar(String palavra, NoArvoreAvl raiz) {
         ItemIndiceInvertido resultado = null;
 
         if(raiz != null) {
-            ItemIndiceInvertido valorRaiz = raiz.getElemento();
 
-            if (palavra.compareTo(valorRaiz.getPalavra()) < 0) {
+            if (palavra.compareTo(raiz.getChave()) < 0) {
                 raiz = raiz.getEsquerda();
-            } else if (palavra.compareTo(valorRaiz.getPalavra()) > 0) {
+            } else if (palavra.compareTo(raiz.getChave()) > 0) {
                 raiz = raiz.getDireita();
             } else {
                 resultado = raiz.getElemento();
@@ -226,7 +249,7 @@ public class ArvoreAvl implements Dicionario {
         }
 
         return resultado;
-	}
+	}*/
 	
 	/*private NoArvoreAvl rotacaoDireita(NoArvoreAvl k2) {
 		NoArvoreAvl k1 = k2.getEsquerda();

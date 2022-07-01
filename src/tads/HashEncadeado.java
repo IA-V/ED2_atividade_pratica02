@@ -3,6 +3,7 @@ package tads;
 import java.util.ArrayList;
 
 import indice.ItemIndiceInvertido;
+import indice.ParQtdId;
 import interfaces.Dicionario;
 
 public class HashEncadeado implements Dicionario {
@@ -20,6 +21,31 @@ public class HashEncadeado implements Dicionario {
 	private void inicializarArrayList() {
 		for(int i = 0; i < this.tamanhoMax; i++) {
 			this.listaNos.add(null);
+		}
+	}
+	
+	public void listar() {
+		for(NoHash no: this.listaNos) {
+			//System.out.println(no);
+			if(no != null) {
+				NoHash noAtual = no;
+				NoHash noAnterior = noAtual;
+				
+				System.out.println("Indice "+no.getIndice());
+				while(noAtual != null) {
+					ArrayList<ParQtdId> pares = no.getItem().getParQtdId();
+					System.out.println("Palavra = "+no.getItem().getPalavra());
+					System.out.print("Pares: ");
+					for(ParQtdId par: pares) {
+						//System.out.println(count);
+						System.out.print(par.getQtd()+" "+par.getIdProduto()+" | ");
+					}
+					System.out.println();
+					noAnterior = noAtual;
+					noAtual = noAtual.getProximoItem();
+				}
+			}
+			System.out.println();
 		}
 	}
 	
@@ -53,27 +79,60 @@ public class HashEncadeado implements Dicionario {
 		// encontra o indice do novo no da lista hash
 		NoHash novoNo = new NoHash(novoItem);
         int indiceNovoNo = this.calcularHash(novoNo.getChave());
+        int idNovoItem = novoItem.getParQtdId().get(0).getIdProduto();
         
         novoNo.setIndice(indiceNovoNo);
         NoHash noAtual = null;
+        NoHash noAnterior = null;
         
         if(this.isEmpty()) {
         	this.listaNos.set(indiceNovoNo, novoNo);
         } else {
-        	if(this.listaNos.get(indiceNovoNo) != null) {
-        		noAtual = this.listaNos.get(indiceNovoNo);
-        		while(noAtual.getProximoItem() != null) {
+        	if((noAtual = this.listaNos.get(indiceNovoNo)) != null) {
+        		boolean adicionarNo = true;
+        		/*System.out.println(noAtual);
+        		System.out.println(noAtual.getProximoItem());*/
+        		while(noAtual != null) {
+        			boolean encontrou = false;
+        			if(novoNo.getChave().compareTo(noAtual.getChave()) == 0) {
+        				adicionarNo = false;
+        				//System.out.println("!!Aqui");
+        				for(ParQtdId par: noAtual.getItem().getParQtdId()) {
+        					/*for(ParQtdId par2: novoItem.getParQtdId()) {
+        						System.out.println("par1 = "+par1.getIdProduto());
+        						System.out.println("par2 = "+par2.getIdProduto());
+        						
+        					}*/
+        					/*System.out.println("NoAtual item id = "+par.getIdProduto()+"\nNoAtual item nome = "+noAtual.getChave());
+    						System.out.println("Novo item id = "+idNovoItem+"\nNovo item nome = "+novoNo.getChave());
+    						System.out.println();*/
+        					if(par.getIdProduto() == idNovoItem) {
+                				//System.out.println("!!!Aqui");
+                				noAtual.getItem().incrementarQtd(1, idNovoItem);
+                				encontrou = true;
+                				break;
+                			}
+                		}
+        				
+        				if(!encontrou) {
+            				noAtual.getItem().addParQtdId(new ParQtdId(idNovoItem));
+            			}
+        			}
+        			
+        			
+        			noAnterior = noAtual;
         			noAtual = noAtual.getProximoItem();
         		}
-        		
-        		noAtual.setProximoItem(novoNo);
+        		if(adicionarNo) {
+        			noAnterior.setProximoItem(novoNo);
+        		}
         	} else {
         		this.listaNos.set(indiceNovoNo, novoNo);
         	}
         }
         
         // Se o fator de carga atingir ou passar de 0.7, o tamanho maximo da lista eh dobrado
-        if((1.0 * this.tamanhoAtual) / this.tamanhoMax >= 0.7) {
+        /*if((1.0 * this.tamanhoAtual) / this.tamanhoMax >= 0.7) {
         	 ArrayList<NoHash> temp = this.listaNos;
         	 this.tamanhoMax *= 2;
         	 this.tamanhoAtual = 0;
@@ -87,7 +146,7 @@ public class HashEncadeado implements Dicionario {
                      this.inserir(no.getItem());
                  }
              }
-        }
+        }*/
         this.tamanhoAtual++;
 	}
 	

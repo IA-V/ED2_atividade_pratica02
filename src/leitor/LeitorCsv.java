@@ -1,7 +1,4 @@
 package leitor;
-import tads.HashEncadeado;
-import tads.ArvoreAvl;
-import tads.ArvoreRN;
 import indice.*;
 import interfaces.Dicionario;
 
@@ -12,37 +9,14 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.File;
 import java.io.FileInputStream;
 
 public abstract class LeitorCsv {
 	
 	private static ArrayList<String> stopwords = new ArrayList<>();
-	/*private static HashEncadeado hash = new HashEncadeado(625000);
-	private static ArvoreAvl avl;
-	private static ArvoreRN rn;*/
-	
-	// calcula um hash para usar como idProduto. idProduto eh um hash porque nenhum arquivo tem um id associado a cada produto
-	private static int calcularHash(String chave) {
-		byte[] arrayBytes = chave.getBytes();
-		
-		int contador = 0;
-		if(arrayBytes.length >= 25) {
-			contador = 25;
-		} else {
-			contador = arrayBytes.length;
-		}
-		
-		int soma = 0;
-		for(int i = 0; i < contador; i++) {
-			//System.out.println(arrayBytes[i]);
-			soma += arrayBytes[i];
-		}
-		
-		int hash = (int)Math.floor(700000*((soma*0.6180339887)%1));
-		
-		return hash;
-	}
 	
 	public static void inserirStopWords() {
 		String linha;
@@ -60,7 +34,7 @@ public abstract class LeitorCsv {
 	
 	private static boolean isStopWord(String palavra) {
 		for(String word: stopwords) {
-			if(word.compareTo(palavra) == 0 || palavra.compareTo("") == 0 || palavra.length() <= 1 || palavra.isBlank()) {
+			if(word.compareTo(palavra) == 0 || palavra.compareTo("") == 0 || palavra.length() <= 9 || palavra.isBlank()) {
 				return true;
 			}
 		}
@@ -78,35 +52,51 @@ public abstract class LeitorCsv {
 	    	BufferedReader leitor = new BufferedReader(new InputStreamReader(new FileInputStream("csv/" + file.getName()), "UTF-8"));
 	    	System.out.println(file.getName());
 			String linha = leitor.readLine();
-			while((linha = leitor.readLine()) != null) {
+			linha = leitor.readLine();
+			
+			while(linha != null) {
+				//System.out.println("oi");
 				String[] colunas = linha.split(",");
-				String[] palavras = colunas[7].split(" ");
+				String[] palavras = null;
+				
+				String regex = "\"([^\"]*)\"";
+				Pattern pattern = Pattern.compile(regex);
+				Matcher matcher = pattern.matcher(linha); // linha é a variável que contém a linha que foi lida do arquivo
+				if (matcher.find()) {
+				    String textoEntreAspas = matcher.group(1); // obtém o grupo lido da regex
+				    //System.out.println(textoEntreAspas);
+				    palavras = textoEntreAspas.split(" ");
+				} else {
+					palavras = colunas[2].split(" ");
+					/*for(String palavra: palavras) {
+						System.out.println(palavra);
+					}*/
+					
+				}
 				
 				for(String palavra: palavras) {
-					System.out.println(palavra);
-					String palavraAux = palavra.replaceAll("[\\!\\/\\#\\½\\”\\’\\'\\“\\\"\\-\\+\\.\\^:,]","").toLowerCase();
+					String palavraAux = palavra.replaceAll("[\\|\\!\\/\\#\\½\\”\\’\\'\\“\\\"\\+\\.\\^:,]","").toLowerCase();
+
+					if(palavraAux.replaceAll("\\u00A0"," ").toLowerCase().split(" ").length > 1) {
+						palavraAux = palavraAux.replaceAll("\\u00A0"," ").toLowerCase().split(" ")[0];
+					}/* else if(palavraAux.replaceAll("\\-"," ").toLowerCase().split(" ").length > 1) {
+						palavraAux = palavraAux.replaceAll("\\u00A0"," ").toLowerCase().split(" ")[1];
+					}*/
 					if(!isStopWord(palavraAux)) {
-						
-						ItemIndiceInvertido item = estrutura.buscar(palavraAux);
-						
-						if(item != null) {
-							ArrayList<ParQtdId> pares = item.getParQtdId();
-							String nomeProduto = colunas[0];
-							int idProduto = calcularHash(nomeProduto);
-							
-							item.incrementarQtd(1, idProduto);
-						} else {
-							ItemIndiceInvertido novoItem = new ItemIndiceInvertido(palavraAux);
-							String nomeProduto = colunas[0];
-							int idProduto = calcularHash(nomeProduto);
-							novoItem.addParQtdId(new ParQtdId(idProduto));
-							estrutura.inserir(novoItem);
-						}
+						//System.out.println(palavraAux);						
+						ItemIndiceInvertido novoItem = new ItemIndiceInvertido(palavraAux);
+						String idProduto = colunas[0];
+						novoItem.addParQtdId(new ParQtdId(Integer.parseInt(idProduto)));
+						estrutura.inserir(novoItem);
 						
 					} else {
 						continue;
 					}
 				}
+				//System.out.println(linha);
+				
+				linha = leitor.readLine();
+				
 			}
 			leitor.close();
 	    }
