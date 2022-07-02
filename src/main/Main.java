@@ -100,21 +100,22 @@ public class Main {
 			linha.add(sc.next());
 			cont++;
         }
-
-		System.out.println(cont + " "+ linha.size());
+		// System.out.println(cont + " "+ linha.size());
 	}
 
 	public static void criarRecomendacao(HashEncadeado hash, String termo){
+		int count = 0;
 		for (int i=0; i<hash.getTamanhoAtual(); i++){
 			ItemIndiceInvertido item = hash.buscar(termo);
+			if(item != null) count ++;
+			
+			calculaPeso(hash.getTamanhoAtual(), count, 1);
 			Integer relevanciaItem = 0;
 			if (item != null){
 				relevanciaItem++;
 			}
 		}
-
 	}
-
 
 	public static Double calculaRelevancia(String termo, Double peso, Integer numTermosDistintos){ //Onde numTermosDistintos é o número de termos distintos da descrição i
 		Double relevancia = 0.0;
