@@ -22,16 +22,16 @@ public class Main {
 		
 		//System.out.println(a2 == a1);
 		
-		a2.inserir(new ItemIndiceInvertido("4"));
-		a2.inserir(new ItemIndiceInvertido("1"));
-		a2.inserir(new ItemIndiceInvertido("2"));
-		a2.inserir(new ItemIndiceInvertido("5"));
+		// a2.inserir(new ItemIndiceInvertido("4"));
+		// a2.inserir(new ItemIndiceInvertido("1"));
+		// a2.inserir(new ItemIndiceInvertido("2"));
+		// a2.inserir(new ItemIndiceInvertido("5"));
 		
 		a1.listar();
 		a2.inserir(new ItemIndiceInvertido("5"));
 		a1.listar();
-		//System.out.println(a2 == a1);
-		//System.out.println(a1.buscar("1").getPalavra());
+		// System.out.println(a2 == a1);
+		// System.out.println(a1.buscar("1").getPalavra());
 		
 		a2.remover("1");
 		a1.listar();
@@ -63,24 +63,26 @@ public class Main {
 	    // 	System.out.println(file.getName());
 	    // }
 	    
-	    // try {
-	    // 	//LeitorCsv.criarIndiceInvertido(listaHash);
-	    // } catch (IOException e) {
-	    // 	System.out.println(e.getMessage());
-	    // }
+	    try {
+	    	LeitorCsv.criarIndiceInvertido(listaHash);
+	    } catch (IOException e) {
+	    	System.out.println(e.getMessage());
+	    }
 		criarRecomendacao(listaHash, "with");
 
-		// int op = 1;
-		// do{
-		// 	Scanner leitor = new Scanner(System.in);
-		// 	System.out.println("digite a opção: ");
-		// 	op = leitor.nextInt();
+		int op = 1;
+		do{
+			Scanner leitor = new Scanner(System.in);
+			System.out.println("digite qual estrutura de dados: \n"+
+								" 1 -  \n"+
+								" 0 - SAIR");
+			op = leitor.nextInt();
 
-		// 	switch(op){
-		// 		case 1:
-		// 			System.out.println(" O documento" + FileName + " possui " + qtdValores + " termos");
-		// 	}
-		// }while(op != 0);
+			switch(op){
+				case 1:
+					System.out.println(" O documento"  + " possui "  + " termos");
+			}
+		}while(op != 0);
 		// criarIndiceInvertido(a3,"/Users/pvborges/IdeaProjects/Trab02ED2-PauloVictorBorges/src/datasets/amazon_com.csv");
 	}
 
@@ -103,7 +105,6 @@ public class Main {
 	}
 
 	public static void criarRecomendacao(HashEncadeado hash, String termo){
-		System.out.println(hash.getTamanhoAtual());
 		for (int i=0; i<hash.getTamanhoAtual(); i++){
 			ItemIndiceInvertido item = hash.buscar(termo);
 			Integer relevanciaItem = 0;
@@ -112,5 +113,19 @@ public class Main {
 			}
 		}
 
+	}
+
+
+	public static Double calculaRelevancia(String termo, Double peso, Integer numTermosDistintos){ //Onde numTermosDistintos é o número de termos distintos da descrição i
+		Double relevancia = 0.0;
+		relevancia = 1/ numTermosDistintos * (peso);
+		return relevancia;
+	}
+
+	public static Double calculaPeso(Integer numProdutosDS, Integer numOcorrencias, Integer qtdProdutosComTermo){
+		Double peso = 0.0;
+
+		peso = numOcorrencias * Math.log(numProdutosDS)/qtdProdutosComTermo;
+		return peso;
 	}
 }

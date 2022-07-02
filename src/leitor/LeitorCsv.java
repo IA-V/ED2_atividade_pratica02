@@ -61,9 +61,9 @@ public abstract class LeitorCsv {
 				
 				String regex = "\"([^\"]*)\"";
 				Pattern pattern = Pattern.compile(regex);
-				Matcher matcher = pattern.matcher(linha); // linha é a variável que contém a linha que foi lida do arquivo
+				Matcher matcher = pattern.matcher(linha); // linha ï¿½ a variï¿½vel que contï¿½m a linha que foi lida do arquivo
 				if (matcher.find()) {
-				    String textoEntreAspas = matcher.group(1); // obtém o grupo lido da regex
+				    String textoEntreAspas = matcher.group(1); // obtï¿½m o grupo lido da regex
 				    //System.out.println(textoEntreAspas);
 				    palavras = textoEntreAspas.split(" ");
 				} else {
@@ -75,7 +75,7 @@ public abstract class LeitorCsv {
 				}
 				
 				for(String palavra: palavras) {
-					String palavraAux = palavra.replaceAll("[\\|\\!\\/\\#\\½\\”\\’\\'\\“\\\"\\+\\.\\^:,]","").toLowerCase();
+					String palavraAux = palavra.replaceAll("[\\|\\!\\/\\#\\ï¿½\\ï¿½\\ï¿½\\'\\ï¿½\\\"\\+\\.\\^:,]","").toLowerCase();
 
 					if(palavraAux.replaceAll("\\u00A0"," ").toLowerCase().split(" ").length > 1) {
 						palavraAux = palavraAux.replaceAll("\\u00A0"," ").toLowerCase().split(" ")[0];
