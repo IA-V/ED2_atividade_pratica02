@@ -105,19 +105,18 @@ public class Main {
 
 	public static void criarRecomendacao(HashEncadeado hash, String termo){
 		int count = 0;
+		Double peso = 0.0;
 		for (int i=0; i<hash.getTamanhoAtual(); i++){
 			ItemIndiceInvertido item = hash.buscar(termo);
 			if(item != null) count ++;
 			
-			calculaPeso(hash.getTamanhoAtual(), count, 1);
-			Integer relevanciaItem = 0;
-			if (item != null){
-				relevanciaItem++;
-			}
+			peso = calculaPeso(hash.getTamanhoAtual(), count, 1);
+			calculaRelevancia(termo, peso, 2); //Onde numTermosDistintos é o número de termos distintos da descrição i
 		}
+		System.out.println();
 	}
 
-	public static Double calculaRelevancia(String termo, Double peso, Integer numTermosDistintos){ //Onde numTermosDistintos é o número de termos distintos da descrição i
+	public static Double calculaRelevancia(String termo, Double peso, Integer numTermosDistintos){ 
 		Double relevancia = 0.0;
 		relevancia = 1/ numTermosDistintos * (peso);
 		return relevancia;
