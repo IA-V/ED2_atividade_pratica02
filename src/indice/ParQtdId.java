@@ -28,4 +28,5 @@ public class ParQtdId {
 	public void incrementarQtd(int qtd) {
 		this.qtd += qtd;
 	}
+
 }

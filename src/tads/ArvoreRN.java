@@ -29,7 +29,7 @@ public class ArvoreRN implements Dicionario {
 			System.out.println("Palavra = "+raiz.getElemento().getPalavra());
 			System.out.print("Pares: ");
 			for(ParQtdId par: pares) {
-				System.out.print(par.getQtd()+" "+par.getIdProduto()+" | ");
+				System.out.print(par.getQtd()+" "+par.getIdProduto()+" | .");
 			}
 			System.out.println();
         	System.out.println();

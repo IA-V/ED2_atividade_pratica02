@@ -26,13 +26,11 @@ public class ArvoreAvl implements Dicionario {
     		this.listar(raiz.getEsquerda());
     		
     		ArrayList<ParQtdId> pares = raiz.getElemento().getParQtdId();
-			System.out.println("Palavra = "+raiz.getElemento().getPalavra());
-			System.out.print("Pares: ");
+			// System.out.println("Palavra = "+raiz.getElemento().getPalavra());
+			// System.out.print("Pares: ");
 			for(ParQtdId par: pares) {
 				System.out.print(par.getQtd()+" "+par.getIdProduto()+" | ");
 			}
-			System.out.println();
-        	System.out.println();
         	
         	this.listar(raiz.getDireita());
     	}

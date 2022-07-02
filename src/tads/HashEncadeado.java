@@ -1,6 +1,7 @@
 package tads;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import indice.ItemIndiceInvertido;
 import indice.ParQtdId;
@@ -26,7 +27,8 @@ public class HashEncadeado implements Dicionario {
 		}
 	}
 	
-	public void listar() {
+	public HashMap listar() {
+		HashMap<Integer, Integer> hashMap = new HashMap();
 		for(NoHash no: this.listaNos) {
 			//System.out.println(no);
 			if(no != null) {
@@ -36,19 +38,19 @@ public class HashEncadeado implements Dicionario {
 				System.out.println("Indice "+no.getIndice());
 				while(noAtual != null) {
 					ArrayList<ParQtdId> pares = no.getItem().getParQtdId();
-					System.out.println("Palavra = "+no.getItem().getPalavra());
+					// System.out.println("Palavra = "+no.getItem().getPalavra());
 					System.out.print("Pares: ");
 					for(ParQtdId par: pares) {
-						//System.out.println(count);
-						System.out.print(par.getQtd()+" "+par.getIdProduto()+" | ");
+						hashMap.put(par.getQtd(), par.getIdProduto());
+						System.out.print(par.getQtd()+" "+par.getIdProduto());
 					}
 					System.out.println();
 					noAnterior = noAtual;
 					noAtual = noAtual.getProximoItem();
 				}
 			}
-			System.out.println();
 		}
+		return hashMap;
 	}
 	
 	public int calcularHash(String chave) {
@@ -68,8 +70,8 @@ public class HashEncadeado implements Dicionario {
 		
 		int hash = (int)Math.floor(this.tamanhoMax*((soma*0.6180339887)%1));
 		
-		System.out.println(chave);
-		System.out.println(hash+"\n");
+		// System.out.println(chave);
+		// System.out.println(hash+"\n");
 		return hash;
 	}
 	
@@ -181,6 +183,29 @@ public class HashEncadeado implements Dicionario {
 	}
 	
 	public ItemIndiceInvertido buscar(String chave) {
+		if(this.isEmpty()) {
+			return null;
+		}
+		
+		int indiceNoBuscado = this.calcularHash(chave);
+		
+		NoHash noAtual = this.listaNos.get(indiceNoBuscado);
+		
+		if(noAtual != null) {
+			while(noAtual.getProximoItem() != null && noAtual.getChave().compareTo(chave) != 0) {
+				noAtual = noAtual.getProximoItem();
+			}
+			
+			if(noAtual.getChave().compareTo(chave) == 0) {
+				return noAtual.getItem();
+			} else if(noAtual.getProximoItem() == null) {
+				return null;
+			}
+		}
+		
+		return null;
+	}
+	public ItemIndiceInvertido buscarPeloId(String chave) {
 		if(this.isEmpty()) {
 			return null;
 		}

@@ -45,17 +45,16 @@ public abstract class LeitorCsv {
 	public static void criarIndiceInvertido(Dicionario estrutura) throws IOException { // Recebe como argumento 
 		inserirStopWords();
 		
-		final File folder = new File("csv/.");
-	    final List<File> fileList = Arrays.asList(folder.listFiles());
+		// final File folder = new File("csv/.");
+	    // final List<File> fileList = Arrays.asList(folder.listFiles());
 		
-	    for(File file: fileList) {
-	    	BufferedReader leitor = new BufferedReader(new InputStreamReader(new FileInputStream("csv/" + file.getName()), "UTF-8"));
-	    	System.out.println(file.getName());
+	    // for(File file: fileList) {
+	    	// BufferedReader leitor = new BufferedReader(new InputStreamReader(new FileInputStream("/Users/pvborges/IdeaProjects/Trab02ED2-PauloVictorBorges/src/datasets/amazon_com.csv"), "UTF-8"));
+			BufferedReader leitor = new BufferedReader(new InputStreamReader(new FileInputStream("/Users/pvborges/desktop/ED2_atividade_pratica02/src/csv/amz.csv"), "UTF-8"));
 			String linha = leitor.readLine();
 			linha = leitor.readLine();
 			
 			while(linha != null) {
-				//System.out.println("oi");
 				String[] colunas = linha.split(",");
 				String[] palavras = null;
 				
@@ -75,7 +74,7 @@ public abstract class LeitorCsv {
 				}
 				
 				for(String palavra: palavras) {
-					String palavraAux = palavra.replaceAll("[\\|\\!\\/\\#\\�\\�\\�\\'\\�\\\"\\+\\.\\^:,]","").toLowerCase();
+					String palavraAux = palavra.replaceAll("[\\|\\!\\/\\#\\½\\”\\’\\'\\“\\\"\\+\\.\\^:,]","").toLowerCase();
 
 					if(palavraAux.replaceAll("\\u00A0"," ").toLowerCase().split(" ").length > 1) {
 						palavraAux = palavraAux.replaceAll("\\u00A0"," ").toLowerCase().split(" ")[0];
@@ -99,6 +98,6 @@ public abstract class LeitorCsv {
 				
 			}
 			leitor.close();
-	    }
+	    // }
 	}
 }

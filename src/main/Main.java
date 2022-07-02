@@ -4,7 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import indice.ItemIndiceInvertido;
@@ -19,7 +21,7 @@ public class Main {
 		
 		ArvoreRN a1 = new ArvoreRN();
 		ArvoreRN a2 = a1;
-		
+		listaHash.buscar("sexy");
 		//System.out.println(a2 == a1);
 		
 		// a2.inserir(new ItemIndiceInvertido("4"));
@@ -27,14 +29,14 @@ public class Main {
 		// a2.inserir(new ItemIndiceInvertido("2"));
 		// a2.inserir(new ItemIndiceInvertido("5"));
 		
-		a1.listar();
-		a2.inserir(new ItemIndiceInvertido("5"));
-		a1.listar();
+		// a1.listar();
+		// a2.inserir(new ItemIndiceInvertido("5"));
+		// a1.listar();
 		// System.out.println(a2 == a1);
 		// System.out.println(a1.buscar("1").getPalavra());
 		
-		a2.remover("1");
-		a1.listar();
+		// a2.remover("1");
+		// a1.listar();
 		//System.out.println(a1.buscar("1").getPalavra());
 		
 		//System.out.println(a1.buscar("3").getPalavra());
@@ -46,61 +48,47 @@ public class Main {
 		// a3.inserir(new ItemIndiceInvertido("2"));
 		// a3.inserir(new ItemIndiceInvertido("5"));
 
-		listaHash.inserir(new ItemIndiceInvertido("4"));
-		listaHash.inserir(new ItemIndiceInvertido("1"));
-		listaHash.inserir(new ItemIndiceInvertido("2"));
-		listaHash.inserir(new ItemIndiceInvertido("5"));
+		// listaHash.inserir(new ItemIndiceInvertido("4"));
+		// listaHash.inserir(new ItemIndiceInvertido("1"));
+		// listaHash.inserir(new ItemIndiceInvertido("2"));
+		// listaHash.inserir(new ItemIndiceInvertido("5"));
 		
 		//a3.listar();
 		
-		a3.remover("4");
-		a3.listar();
+		// a3.remover("4");
+		// a3.listar();
 		
 		final File folder = new File("/Users/pvborges/IdeaProjects/Trab02ED2-PauloVictorBorges/src/datasets/amazon_com.csv");
 	    // final List<File> fileList = Arrays.asList(folder.listFiles());
 	    
-	    // for(File file: fileList) {
-	    // 	System.out.println(file.getName());
-	    // }
-	    
-	    try {
-	    	LeitorCsv.criarIndiceInvertido(listaHash);
-	    } catch (IOException e) {
-	    	System.out.println(e.getMessage());
-	    }
-		criarRecomendacao(listaHash, "with");
 
+		HashMap hashItens = new HashMap();
 		int op = 1;
 		do{
 			Scanner leitor = new Scanner(System.in);
 			System.out.println("digite qual estrutura de dados: \n"+
-								" 1 -  \n"+
+								" 1 - HASH\n"+
+								" 2 - HASH\n"+
+								" 3 - HASH\n"+
 								" 0 - SAIR");
 			op = leitor.nextInt();
-
+			if (op != 1 && op!= 0) op = 1;
 			switch(op){
-				case 1:
-					System.out.println(" O documento"  + " possui "  + " termos");
-			}
+				case 0:
+					System.out.println("Obrigado por utilizar o programa!");
+					break;
+				case 1:	    
+					try {
+						LeitorCsv.criarIndiceInvertido(listaHash);
+						hashItens = listaHash.listar();
+					} catch (IOException e) {
+						System.out.println(e.getMessage());
+					}
+					criarRecomendacao(listaHash, "with");
+					}
+					break;
 		}while(op != 0);
 		// criarIndiceInvertido(a3,"/Users/pvborges/IdeaProjects/Trab02ED2-PauloVictorBorges/src/datasets/amazon_com.csv");
-	}
-
-	/**
-	 * @param av
-	 * @throws FileNotFoundException
-	 */
-	public static void criarIndiceInvertido(ArvoreAvl av, String filePath) throws FileNotFoundException{
-		Scanner sc = new Scanner(new File(filePath));
-        sc.useDelimiter(",");
-		ArrayList<String> linha = new ArrayList<>();
-		//14 colunas o dataset tem 
-		int cont=0;
-        while (sc.hasNext()){
-			linha.add(sc.next());
-			cont++;
-        }
-		// System.out.println(cont + " "+ linha.size());
 	}
 
 	public static void criarRecomendacao(HashEncadeado hash, String termo){
