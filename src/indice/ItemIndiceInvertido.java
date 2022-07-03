@@ -1,15 +1,16 @@
 package indice;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ItemIndiceInvertido {
 	private String palavra;
-	private ArrayList<ParQtdId> paresQtdId; 
+	private HashMap<Integer, Integer> paresQtdId;
 	private Double relevancia;
 	
 	public ItemIndiceInvertido (String palavra) {
 		this.palavra = palavra;
-		this.paresQtdId = new ArrayList<>();
+		this.paresQtdId = new HashMap<>();
 	}
 
 	public Double getRelevancia() {
@@ -28,19 +29,19 @@ public class ItemIndiceInvertido {
 		this.palavra = palavra;
 	}
 
-	public ArrayList<ParQtdId> getParQtdId() {
+	public HashMap<Integer, Integer> getParQtdId() {
 		return paresQtdId;
 	}
 
-	public void setParQtdId(ArrayList<ParQtdId> parQtdId) {
+	public void setParQtdId(HashMap<Integer, Integer> parQtdId) {
 		this.paresQtdId = parQtdId;
 	}
 	
-	public void addParQtdId(ParQtdId novoPar) {
-		this.paresQtdId.add(novoPar);
+	public void addParQtdId(Integer idProduto, Integer qtd) {
+		this.paresQtdId.put(idProduto, qtd);
 	}
 	
-	public void incrementarQtd(int incremento, int idProduto) {
+	/*public void incrementarQtd(int incremento, int idProduto) {
 		for(ParQtdId par: this.paresQtdId) {
 			int idProdutoPar = par.getIdProduto();
 			
@@ -50,7 +51,7 @@ public class ItemIndiceInvertido {
 			}
 			
 		}
-	}
+	}*/
 
 	@Override
 	public String toString() {

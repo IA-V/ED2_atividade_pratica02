@@ -3,6 +3,7 @@ package tads;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Set;
 
 import indice.ItemIndiceInvertido;
 import indice.ParQtdId;
@@ -30,7 +31,7 @@ public class HashEncadeado implements Dicionario {
 	}
 	
 	public HashMap listar() {
-		HashMap<Integer, ItemIndiceInvertido> hashMap = new HashMap();
+		HashMap<Integer, ItemIndiceInvertido> hashMap = new HashMap<>();
 		for(NoHash no: this.listaNos) {
 			//System.out.println(no);
 			if(no != null) {
@@ -43,20 +44,20 @@ public class HashEncadeado implements Dicionario {
 
 				
 				while(noAtual != null) {
-					ArrayList<ParQtdId> pares = no.getItem().getParQtdId();
+					HashMap<Integer, Integer> pares = no.getItem().getParQtdId();
 					// System.out.println("Palavra = "+no.getItem().getPalavra());
 					// System.out.print("Pares: ");
 
-					for(ParQtdId par: pares) {
+					for(Integer par: pares.keySet()) {
 						// System.out.print(par.getQtd()+" "+par.getIdProduto());
 						cont ++;
 						ItemIndiceInvertido indiceInvertido = new ItemIndiceInvertido(no.getItem().getPalavra());
 
-						peso = calculaPeso(no.getIndice(), par.getQtd(), par.getIdProduto());
+						peso = calculaPeso(no.getIndice(), pares.get(par), par);
 						relevancia = calculaRelevancia(no.getItem().getPalavra(), peso, no.getIndice());
 						indiceInvertido.setRelevancia(relevancia);
 						// System.out.println("[" + par.getIdProduto()+"]" + " --->" + indiceInvertido.toString());
-						hashMap.put(par.getIdProduto(), indiceInvertido);
+						hashMap.put(par, indiceInvertido);
 					}
 					
 					noAnterior = noAtual;
@@ -97,8 +98,7 @@ public class HashEncadeado implements Dicionario {
 		// encontra o indice do novo no da lista hash
 		NoHash novoNo = new NoHash(novoItem);
         int indiceNovoNo = this.calcularHash(novoNo.getChave());
-        int idNovoItem = novoItem.getParQtdId().get(0).getIdProduto();
-        
+        Set<Integer> idNovoItem = novoItem.getParQtdId().keySet();
         novoNo.setIndice(indiceNovoNo);
         NoHash noAtual = null;
         NoHash noAnterior = null;
@@ -111,29 +111,21 @@ public class HashEncadeado implements Dicionario {
         		/*System.out.println(noAtual);
         		System.out.println(noAtual.getProximoItem());*/
         		while(noAtual != null) {
+        			Integer id = idNovoItem.iterator().next();
+        			Integer qtd = noAtual.getItem().getParQtdId().get(id);
+					
+					//System.out.println("qtd = "+qtd+" id = "+id+"\n");
         			boolean encontrou = false;
         			if(novoNo.getChave().compareTo(noAtual.getChave()) == 0) {
         				adicionarNo = false;
-        				//System.out.println("!!Aqui");
-        				for(ParQtdId par: noAtual.getItem().getParQtdId()) {
-        					/*for(ParQtdId par2: novoItem.getParQtdId()) {
-        						System.out.println("par1 = "+par1.getIdProduto());
-        						System.out.println("par2 = "+par2.getIdProduto());
-        						
-        					}*/
-        					/*System.out.println("NoAtual item id = "+par.getIdProduto()+"\nNoAtual item nome = "+noAtual.getChave());
-    						System.out.println("Novo item id = "+idNovoItem+"\nNovo item nome = "+novoNo.getChave());
-    						System.out.println();*/
-        					if(par.getIdProduto() == idNovoItem) {
-                				//System.out.println("!!!Aqui");
-                				noAtual.getItem().incrementarQtd(1, idNovoItem);
-                				encontrou = true;
-                				break;
-                			}
-                		}
+        				if(noAtual.getItem().getParQtdId().containsKey(id) && qtd != null) {
+        					//System.out.println("qtd = "+qtd+" id = "+id+"\n");
+        					noAtual.getItem().addParQtdId(id, qtd+1);
+            				encontrou = true;
+        				}
         				
         				if(!encontrou) {
-            				noAtual.getItem().addParQtdId(new ParQtdId(idNovoItem));
+        					noAtual.getItem().addParQtdId(id, 1);
             			}
         			}
         			
@@ -148,23 +140,6 @@ public class HashEncadeado implements Dicionario {
         		this.listaNos.set(indiceNovoNo, novoNo);
         	}
         }
-        
-        // Se o fator de carga atingir ou passar de 0.7, o tamanho maximo da lista eh dobrado
-        /*if((1.0 * this.tamanhoAtual) / this.tamanhoMax >= 0.7) {
-        	 ArrayList<NoHash> temp = this.listaNos;
-        	 this.tamanhoMax *= 2;
-        	 this.tamanhoAtual = 0;
-        	 this.listaNos = new ArrayList<>();
-             
-             
-             this.inicializarArrayList();
-  
-             for (NoHash no : temp) {
-                 while(no != null) {
-                     this.inserir(no.getItem());
-                 }
-             }
-        }*/
         this.tamanhoAtual++;
 	}
 	
@@ -196,7 +171,7 @@ public class HashEncadeado implements Dicionario {
 		return null;
 	}
 	
-	public ItemIndiceInvertido buscar(String chave) {
+	/*public ItemIndiceInvertido buscar(String chave) {
 		if(this.isEmpty()) {
 			return null;
 		}
@@ -218,7 +193,44 @@ public class HashEncadeado implements Dicionario {
 		}
 		
 		return null;
-	}
+	}*/
+	
+	public ItemIndiceInvertido buscar(String chave) {
+        if(this.isEmpty()) {
+            return null;
+        }
+        
+        Double peso = 0.0;
+        Double relevancia = 0.0;
+
+        int indiceNoBuscado = this.calcularHash(chave);
+        
+        NoHash noAtual = this.listaNos.get(indiceNoBuscado);
+        
+        if(noAtual != null) {
+            while(noAtual.getProximoItem() != null && noAtual.getChave().compareTo(chave) != 0) {
+                noAtual = noAtual.getProximoItem();
+            }
+            
+            if(noAtual.getChave().compareTo(chave) == 0) {
+                //System.out.println(noAtual.getItem().toString());
+                ItemIndiceInvertido indiceInvertido = new ItemIndiceInvertido(noAtual.getItem().getPalavra());
+
+                peso = calculaPeso(noAtual.getIndice(), this.calcularHash(chave) , noAtual.getIndice());
+                relevancia = calculaRelevancia(noAtual.getItem().getPalavra(), peso, noAtual.getIndice());
+                indiceInvertido.setRelevancia(relevancia);
+                //System.out.println("[" +  this.calcularHash(chave) +"]" + " --->" + indiceInvertido.toString());
+                // hashMap.put(par.getIdProduto(), indiceInvertido);
+            
+                return noAtual.getItem();
+            } else if(noAtual.getProximoItem() == null) {
+                return null;
+            }
+        }
+        
+        return null;
+    }
+	
 	public ItemIndiceInvertido buscarPeloId(String chave) {
 		if(this.isEmpty()) {
 			return null;

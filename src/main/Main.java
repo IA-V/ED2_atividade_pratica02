@@ -9,20 +9,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import indice.ItemIndiceInvertido;
 import indice.ParQtdId;
 import tads.*;
 import leitor.LeitorCsv;
 public class Main {
+	
+	private static final double limiar = 0.01;
+	
 	public static void main(String[] args) throws IOException {
-		HashEncadeado listaHash = new HashEncadeado(700000);
+		HashEncadeado listaHash = new HashEncadeado(100);
 		
 		listaHash.calcularHash("inch");
-		
-		ArvoreRN a1 = new ArvoreRN();
-		ArvoreRN a2 = a1;
-		listaHash.buscar("sexy");
+
+		//listaHash.buscar("sexy");
 		//System.out.println(a2 == a1);
 		
 		// a2.inserir(new ItemIndiceInvertido("4"));
@@ -59,18 +61,19 @@ public class Main {
 		// a3.remover("4");
 		// a3.listar();
 		
-		final File folder = new File("/Users/pvborges/IdeaProjects/Trab02ED2-PauloVictorBorges/src/datasets/amazon_com.csv");
+		final File folder = new File("/csv/amz.csv");
 	    // final List<File> fileList = Arrays.asList(folder.listFiles());
-	    
+		HashMap<Integer, Double> parProdutoRelevancia = new HashMap<>();
 
 		HashMap<Integer, ItemIndiceInvertido> hashItens = new HashMap();
 		LeitorCsv.criarIndiceInvertido(listaHash);
 		hashItens = listaHash.listar();
 		int op = 1;
 		do{
+			parProdutoRelevancia.clear();
 			Scanner leitor = new Scanner(System.in);
 			System.out.println("digite qual estrutura de dados: \n"+
-								" 1 - HashEncadeado\n"+
+								" 1 - Buscar por termo\n"+
 								" 2 - Buscar por relevancia\n"+
 								" 3 - Listar Hash \n" + 
 								" 0 - SAIR");
@@ -102,44 +105,121 @@ public class Main {
 				case 1:	    
 						// LeitorCsv.criarIndiceInvertido(listaHash);
 						// hashItens = listaHash.listar();
-						System.out.println("Digite o termo desejado: ");
+						System.out.println("Quantos termos serao inseridos? ");
+						int qtdTermos = Integer.parseInt(leitorString.nextLine());
+						System.out.println("Digite o(s) termo(s) desejado(s): ");
 						String termoEscolhido = leitorString.nextLine();
-						for (int i =0 ; i<hashItens.size(); i++){
-							if(hashItens.get(i) != null)
-							if (hashItens.get(i).getPalavra().equals(termoEscolhido)){
-								System.out.println(hashItens.get(i));
+						ArrayList<Integer> intersecao = new ArrayList<>(1);
+						
+						ItemIndiceInvertido item = null;
+						String[] termos = termoEscolhido.split(" ");
+						
+					
+						intersecao = calcularIntersecaoProdutos(termos, listaHash);
+						
+						
+						for(Integer idProduto: intersecao) {
+							parProdutoRelevancia.put(idProduto, criarRecomendacao(listaHash, termos, idProduto, intersecao.size()));
+						}
+						
+						System.out.println("Produtos recomendados: ");
+						for(Integer idProduto: parProdutoRelevancia.keySet()) {
+							if(parProdutoRelevancia.get(idProduto) >= limiar) {
+								String nomeProduto = LeitorCsv.getNomeProduto(idProduto);
+								if(nomeProduto != null) {
+									System.out.println(nomeProduto);
+								}
 							}
 						}
-					
+						System.out.println();
+						/*for (int i =0 ; i<hashItens.size(); i++){
+							if(hashItens.get(i) != null)
+							if (hashItens.get(i).getPalavra().compareTo(termoEscolhido) == 0){
+								System.out.println(hashItens.get(i));
+							}
+						}*/
+						break;
 				}
-					break;
+					
 				
 		}while(op != 0);
 	}
 
-	public static void criarRecomendacao(HashEncadeado hash, String termo){
-		int count = 0;
+	public static double criarRecomendacao(HashEncadeado hash, String[] palavras, int idProduto, int qtdProdutosComTermo){
+		int qtd = 0;
 		Double peso = 0.0;
-		for (int i=0; i<hash.getTamanhoAtual(); i++){
+		for(String palavra: palavras) {
+			ItemIndiceInvertido item = hash.buscar(palavra);
+			if(item != null) {
+				for(Integer chave: item.getParQtdId().keySet()) {
+					if(chave == idProduto) {
+						qtd = item.getParQtdId().get(chave);
+						break;
+					}
+				}
+				peso += calcularPeso(LeitorCsv.getQtdProdutos(), qtd, qtdProdutosComTermo);
+				//System.out.println(peso);
+			}
+			
+		}
+		//System.out.println(calcularRelevancia(peso, LeitorCsv.getQtdPalavrasProduto(idProduto).size()));
+		return calcularRelevancia(peso, LeitorCsv.getQtdPalavrasProduto(idProduto).size());
+		//parProdutoRelevancia.put(idProduto, calcularRelevancia(peso, LeitorCsv.getQtdPalavrasProduto(idProduto).size()));
+		/*for (int i=0; i<hash.getTamanhoAtual(); i++){
 			ItemIndiceInvertido item = hash.buscar(termo);
 			if(item != null) count ++;
 			
-			peso = calculaPeso(hash.getTamanhoAtual(), count, 1);
-			calculaRelevancia(termo, peso, 2); //Onde numTermosDistintos é o número de termos distintos da descrição i
-		}
-		System.out.println();
+			peso = calcularPeso(LeitorCsv.getQtdProdutos(), count, 1);
+			calcularRelevancia(termo, peso, 2);
+		}*/
+		//System.out.println();
 	}
 
-	public static Double calculaRelevancia(String termo, Double peso, Integer numTermosDistintos){ 
-		Double relevancia = 0.0;
-		relevancia = 1/ numTermosDistintos * (peso);
+	public static Double calcularRelevancia(double peso, Integer numTermosDistintos){ //Onde numTermosDistintos eh o numero de termos distintos da descricao i
+		double relevancia = 0.0;
+		double somaPesos = 0.0;
+		relevancia = (1.0/ numTermosDistintos) * (peso);
+		
 		return relevancia;
 	}
 
-	public static Double calculaPeso(Integer numProdutosDS, Integer numOcorrencias, Integer qtdProdutosComTermo){
+	public static Double calcularPeso(Integer numProdutosDS, Integer numOcorrencias, Integer qtdProdutosComTermo){
 		Double peso = 0.0;
 
 		peso = numOcorrencias * Math.log(numProdutosDS)/qtdProdutosComTermo;
 		return peso;
+	}
+	
+	private static ArrayList<Integer> calcularIntersecaoProdutos(String[] termos, HashEncadeado listaHash) {
+		boolean listaCopiada = false;
+        ArrayList<Integer> listaIntersecao = new ArrayList<>();
+        ArrayList<Integer> listaAux = new ArrayList<>();
+		HashMap<Integer, Integer> hashAux = new HashMap<>();
+        
+		for(String termo: termos) {
+			if(listaHash.buscar(termo) != null) {
+				hashAux = listaHash.buscar(termo).getParQtdId();
+				if (!listaCopiada) {
+	                for (Integer chavePar: hashAux.keySet()) { // Para cada lista de cada termo
+	                    listaAux.add((Integer) chavePar); // Copiando a primeira lista de id's para a auxiliar
+	                }
+	                listaCopiada = true;
+	            } else {
+	                for (Integer chavePar: hashAux.keySet()) { // Para cada lista de cada termo
+	                    for (Integer chaveListaAux: listaAux) {
+	                        if (((Integer) chavePar).equals(chaveListaAux)) { // Se true � porque o par em quest�o existe nos dois conjuntos, adiciona-o na lista interseccao
+	                        	listaIntersecao.add((Integer) chavePar);
+	                        }
+	                    }
+	                }
+	                listaAux.clear();
+	                listaAux = new ArrayList<>(listaIntersecao);
+	                listaIntersecao.clear();
+	            }
+			}
+			
+		}
+		
+		return listaAux;
 	}
 }
