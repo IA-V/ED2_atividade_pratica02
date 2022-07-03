@@ -40,11 +40,12 @@ public class HashEncadeado implements Dicionario {
 				Double relevancia = 0.0;
 
 
-
+				
 				while(noAtual != null) {
 					ArrayList<ParQtdId> pares = no.getItem().getParQtdId();
 					// System.out.println("Palavra = "+no.getItem().getPalavra());
 					// System.out.print("Pares: ");
+
 					for(ParQtdId par: pares) {
 						// System.out.print(par.getQtd()+" "+par.getIdProduto());
 						cont ++;
@@ -53,7 +54,7 @@ public class HashEncadeado implements Dicionario {
 						peso = calculaPeso(no.getIndice(), par.getQtd(), par.getIdProduto());
 						relevancia = calculaRelevancia(no.getItem().getPalavra(), peso, no.getIndice());
 						indiceInvertido.setRelevancia(relevancia);
-						System.out.println("[" + par.getIdProduto()+"]" + " --->" + indiceInvertido.toString());
+						// System.out.println("[" + par.getIdProduto()+"]" + " --->" + indiceInvertido.toString());
 						hashMap.put(par.getIdProduto(), indiceInvertido);
 					}
 					

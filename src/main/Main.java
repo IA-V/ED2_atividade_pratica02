@@ -63,16 +63,16 @@ public class Main {
 	    // final List<File> fileList = Arrays.asList(folder.listFiles());
 	    
 
-		HashMap hashItens = new HashMap();
+		HashMap<Integer, ItemIndiceInvertido> hashItens = new HashMap();
+		
 		int op = 1;
 		do{
 			Scanner leitor = new Scanner(System.in);
 			System.out.println("digite qual estrutura de dados: \n"+
 								" 1 - HASH\n"+
-								" 2 - HASH\n"+
-								" 3 - HASH\n"+
 								" 0 - SAIR");
 			op = leitor.nextInt();
+			Scanner leitorString = new Scanner(System.in);
 			if (op != 1 && op!= 0) op = 1;
 			switch(op){
 				case 0:
@@ -82,14 +82,20 @@ public class Main {
 					try {
 						LeitorCsv.criarIndiceInvertido(listaHash);
 						hashItens = listaHash.listar();
+						System.out.println("Digite o termo desejado: ");
+						String termoEscolhido = leitorString.nextLine();
+						for (int i =0 ; i<hashItens.size(); i++){
+							if(hashItens.get(i) != null)
+							if (hashItens.get(i).getPalavra().equals(termoEscolhido)){
+								System.out.println(hashItens.get(i));
+							}
+						}
 					} catch (IOException e) {
 						System.out.println(e.getMessage());
 					}
-					// criarRecomendacao(listaHash, "with");
-					}
+				}
 					break;
 		}while(op != 0);
-		// criarIndiceInvertido(a3,"/Users/pvborges/IdeaProjects/Trab02ED2-PauloVictorBorges/src/datasets/amazon_com.csv");
 	}
 
 	public static void criarRecomendacao(HashEncadeado hash, String termo){
