@@ -2,6 +2,7 @@ package tads;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import indice.ItemIndiceInvertido;
 import indice.ParQtdId;
@@ -28,7 +29,7 @@ public class HashEncadeado implements Dicionario {
 	}
 	
 	public HashMap listar() {
-		HashMap<Integer, Integer> hashMap = new HashMap();
+		HashMap<Integer, ItemIndiceInvertido> hashMap = new HashMap();
 		for(NoHash no: this.listaNos) {
 			//System.out.println(no);
 			if(no != null) {
@@ -38,23 +39,22 @@ public class HashEncadeado implements Dicionario {
 				Double peso = 0.0;
 				Double relevancia = 0.0;
 
-				System.out.println("Indice "+no.getIndice());
+
 
 				while(noAtual != null) {
 					ArrayList<ParQtdId> pares = no.getItem().getParQtdId();
 					// System.out.println("Palavra = "+no.getItem().getPalavra());
-					System.out.print("Pares: ");
+					// System.out.print("Pares: ");
 					for(ParQtdId par: pares) {
-						hashMap.put(par.getQtd(), par.getIdProduto());
-
 						// System.out.print(par.getQtd()+" "+par.getIdProduto());
 						cont ++;
-						
+						ItemIndiceInvertido indiceInvertido = new ItemIndiceInvertido(no.getItem().getPalavra());
+
 						peso = calculaPeso(no.getIndice(), par.getQtd(), par.getIdProduto());
-						// System.out.println(peso + " peso ");
 						relevancia = calculaRelevancia(no.getItem().getPalavra(), peso, no.getIndice());
-						par.setRelevancia(relevancia);
-						System.out.println(par.toString());
+						indiceInvertido.setRelevancia(relevancia);
+						System.out.println("[" + par.getIdProduto()+"]" + " --->" + indiceInvertido.toString());
+						hashMap.put(par.getIdProduto(), indiceInvertido);
 					}
 					
 					noAnterior = noAtual;
@@ -244,11 +244,12 @@ public class HashEncadeado implements Dicionario {
 	public static void criarRecomendacao(HashEncadeado hash, String termo){
 		int count = 0;
 		Double peso = 0.0;
+
 		for (int i=0; i<hash.getTamanhoAtual(); i++){
 			ItemIndiceInvertido item = hash.buscar(termo);
 			if(item != null) count ++;
 			
-			peso = calculaPeso(hash.getTamanhoAtual(), count, 1);
+			peso = calculaPeso(hash.getTamanhoAtual(), count, 1000);
 			calculaRelevancia(termo, peso, 2); //Onde numTermosDistintos é o número de termos distintos da descrição i
 		}
 		System.out.println();
@@ -267,4 +268,40 @@ public class HashEncadeado implements Dicionario {
 		peso = numOcorrencias * Math.log(numProdutosDS)/qtdProdutosComTermo;
 		return peso;
 	}
+
+	public HashMap buscarTermo(String termo) {
+		HashMap<Integer, Integer> hashMap = new HashMap();
+		for(NoHash no: this.listaNos) {
+			if(no != null) {
+				NoHash noAtual = no;
+				NoHash noAnterior = noAtual;
+				int cont = 0;
+				Double peso = 0.0;
+				Double relevancia = 0.0;
+
+
+
+				while(noAtual != null) {
+					ArrayList<ParQtdId> pares = no.getItem().getParQtdId();
+					// System.out.println("Palavra = "+no.getItem().getPalavra());
+					System.out.print("Pares: ");
+					for(ParQtdId par: pares) {
+						hashMap.put(par.getQtd(), par.getIdProduto());
+
+						// System.out.print(par.getQtd()+" "+par.getIdProduto());
+						cont ++;
+						
+						peso = calculaPeso(no.getIndice(), par.getQtd(), par.getIdProduto());
+						relevancia = calculaRelevancia(no.getItem().getPalavra(), peso, no.getIndice());
+						System.out.println(par.toString());
+					}
+					
+					noAnterior = noAtual;
+					noAtual = noAtual.getProximoItem();
+				}
+			}
+		}
+		return hashMap;
+	}
+	
 }

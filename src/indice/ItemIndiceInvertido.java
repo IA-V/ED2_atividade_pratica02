@@ -54,7 +54,9 @@ public class ItemIndiceInvertido {
 
 	@Override
 	public String toString() {
-		return "ItemIndiceInvertido [palavra=" + palavra + ", paresQtdId=" + paresQtdId + "]";
+		return "[palavra=" + palavra + ", relevancia=" + relevancia
+				+ "]";
 	}
+
 	
 }
