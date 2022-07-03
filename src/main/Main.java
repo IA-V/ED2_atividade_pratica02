@@ -15,7 +15,7 @@ import indice.ParQtdId;
 import tads.*;
 import leitor.LeitorCsv;
 public class Main {
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws IOException {
 		HashEncadeado listaHash = new HashEncadeado(700000);
 		
 		listaHash.calcularHash("inch");
@@ -64,24 +64,37 @@ public class Main {
 	    
 
 		HashMap<Integer, ItemIndiceInvertido> hashItens = new HashMap();
-		
+		LeitorCsv.criarIndiceInvertido(listaHash);
+		hashItens = listaHash.listar();
 		int op = 1;
 		do{
 			Scanner leitor = new Scanner(System.in);
 			System.out.println("digite qual estrutura de dados: \n"+
-								" 1 - HASH\n"+
+								" 1 - HashEncadeado\n"+
+								" 2 - Buscar por relevancia\n"+
 								" 0 - SAIR");
 			op = leitor.nextInt();
 			Scanner leitorString = new Scanner(System.in);
-			if (op != 1 && op!= 0) op = 1;
+			if (op != 1 && op!= 0 && op !=2) op = 1;
 			switch(op){
 				case 0:
 					System.out.println("Obrigado por utilizar o programa!");
 					break;
+				case 2:
+					System.out.println("Digite o limiar da relevancia: ");
+					Double relevancia = leitor.nextDouble();
+					hashItens = listaHash.listar();
+
+					for (int i =0 ; i<hashItens.size(); i++){
+						if(hashItens.get(i) != null)
+						if (hashItens.get(i).getRelevancia() <= relevancia){
+							System.out.println(hashItens.get(i));
+						}
+					}
+					break;		
 				case 1:	    
-					try {
-						LeitorCsv.criarIndiceInvertido(listaHash);
-						hashItens = listaHash.listar();
+						// LeitorCsv.criarIndiceInvertido(listaHash);
+						// hashItens = listaHash.listar();
 						System.out.println("Digite o termo desejado: ");
 						String termoEscolhido = leitorString.nextLine();
 						for (int i =0 ; i<hashItens.size(); i++){
@@ -90,11 +103,10 @@ public class Main {
 								System.out.println(hashItens.get(i));
 							}
 						}
-					} catch (IOException e) {
-						System.out.println(e.getMessage());
-					}
+					
 				}
 					break;
+				
 		}while(op != 0);
 	}
 
