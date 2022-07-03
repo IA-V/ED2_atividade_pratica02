@@ -34,17 +34,29 @@ public class HashEncadeado implements Dicionario {
 			if(no != null) {
 				NoHash noAtual = no;
 				NoHash noAnterior = noAtual;
-				
+				int cont = 0;
+				Double peso = 0.0;
+				Double relevancia = 0.0;
+
 				System.out.println("Indice "+no.getIndice());
+
 				while(noAtual != null) {
 					ArrayList<ParQtdId> pares = no.getItem().getParQtdId();
 					// System.out.println("Palavra = "+no.getItem().getPalavra());
 					System.out.print("Pares: ");
 					for(ParQtdId par: pares) {
 						hashMap.put(par.getQtd(), par.getIdProduto());
-						System.out.print(par.getQtd()+" "+par.getIdProduto());
+
+						// System.out.print(par.getQtd()+" "+par.getIdProduto());
+						cont ++;
+						
+						peso = calculaPeso(no.getIndice(), par.getQtd(), par.getIdProduto());
+						// System.out.println(peso + " peso ");
+						relevancia = calculaRelevancia(no.getItem().getPalavra(), peso, no.getIndice());
+						par.setRelevancia(relevancia);
+						System.out.println(par.toString());
 					}
-					System.out.println();
+					
 					noAnterior = noAtual;
 					noAtual = noAtual.getProximoItem();
 				}
@@ -227,5 +239,32 @@ public class HashEncadeado implements Dicionario {
 		}
 		
 		return null;
+	}
+
+	public static void criarRecomendacao(HashEncadeado hash, String termo){
+		int count = 0;
+		Double peso = 0.0;
+		for (int i=0; i<hash.getTamanhoAtual(); i++){
+			ItemIndiceInvertido item = hash.buscar(termo);
+			if(item != null) count ++;
+			
+			peso = calculaPeso(hash.getTamanhoAtual(), count, 1);
+			calculaRelevancia(termo, peso, 2); //Onde numTermosDistintos é o número de termos distintos da descrição i
+		}
+		System.out.println();
+	}
+
+	public static Double calculaRelevancia(String termo, Double peso, Integer numTermosDistintos){ 
+		Double relevancia;
+		relevancia = 1/ (numTermosDistintos * peso);
+		// System.out.println(relevancia + " relevancia");
+		return relevancia;
+	}
+
+	public static Double calculaPeso(Integer numProdutosDS, Integer numOcorrencias, Integer qtdProdutosComTermo){
+		Double peso = 0.0;
+
+		peso = numOcorrencias * Math.log(numProdutosDS)/qtdProdutosComTermo;
+		return peso;
 	}
 }

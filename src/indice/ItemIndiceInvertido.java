@@ -5,10 +5,19 @@ import java.util.ArrayList;
 public class ItemIndiceInvertido {
 	private String palavra;
 	private ArrayList<ParQtdId> paresQtdId; 
+	private Double relevancia;
 	
 	public ItemIndiceInvertido (String palavra) {
 		this.palavra = palavra;
 		this.paresQtdId = new ArrayList<>();
+	}
+
+	public Double getRelevancia() {
+		return relevancia;
+	}
+
+	public void setRelevancia(Double relevancia) {
+		this.relevancia = relevancia;
 	}
 
 	public String getPalavra() {
