@@ -72,24 +72,31 @@ public class Main {
 			System.out.println("digite qual estrutura de dados: \n"+
 								" 1 - HashEncadeado\n"+
 								" 2 - Buscar por relevancia\n"+
+								" 3 - Listar Hash \n" + 
 								" 0 - SAIR");
 			op = leitor.nextInt();
 			Scanner leitorString = new Scanner(System.in);
-			if (op != 1 && op!= 0 && op !=2) op = 1;
 			switch(op){
 				case 0:
 					System.out.println("Obrigado por utilizar o programa!");
 					break;
+				case 3:
+					System.out.println(hashItens);
+					break;	
 				case 2:
 					System.out.println("Digite o limiar da relevancia: ");
 					Double relevancia = leitor.nextDouble();
+					Double relevanciaArmazenada = 0.0;
 					hashItens = listaHash.listar();
-
+					
 					for (int i =0 ; i<hashItens.size(); i++){
-						if(hashItens.get(i) != null)
-						if (hashItens.get(i).getRelevancia() <= relevancia){
-							System.out.println(hashItens.get(i));
-						}
+						if(hashItens.get(i) != null){
+							// System.out.println(" minha relevancia " + relevancia + " a que ta armazenada : " + hashItens.get(i).getRelevancia());
+							relevanciaArmazenada = (hashItens.get(i).getRelevancia());
+							if (relevanciaArmazenada.longValue() <= relevancia){
+								System.out.println(hashItens.get(i));
+							}
+					}
 					}
 					break;		
 				case 1:	    

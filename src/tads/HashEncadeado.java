@@ -19,6 +19,7 @@ public class HashEncadeado implements Dicionario {
 		this.tamanhoAtual = 0;
 		this.inicializarArrayList();
 	}
+	
 	public int getTamanhoAtual(){
 		return this.tamanhoAtual;
 	}
